@@ -1,75 +1,54 @@
 /**
  * calculations.js
- * ─────────────────────────────────────────────────────────────
- * REGRA DE NEGÓCIO INTERNA — os valores deste arquivo JAMAIS
- * devem ser exibidos ao cliente na interface pública.
- * São usados apenas internamente para compor a mensagem
- * enviada à equipe via WhatsApp.
- * ─────────────────────────────────────────────────────────────
+ * ────────────────────────────────────────────────────────
+ * REGRA DE NEGÓCIO INTERNA
+ * Os valores de tarifa por km JAMAIS devem ser exibidos ao
+ * cliente na interface. Apenas o resultado final formatado
+ * (ex: "R$ 42,00") pode ser mostrado — sem o cálculo.
+ * ────────────────────────────────────────────────────────
  */
 
 const Pricing = (() => {
 
-  /* ── Tarifas internas (não exibir ao cliente) ────────────── */
-
-  /** R$ por km — Sedan (até 4 passageiros) */
-  const PRICE_PER_KM_SEDAN = 1.5;
-
-  /** R$ por km — Van 7 lugares (5–6 passageiros) */
-  const PRICE_PER_KM_VAN = 2.2;
-
-  /** Passageiros máximos no sedan antes de exigir van */
+  /* Tarifas internas — não expor ao cliente */
+  const PRICE_PER_KM_SEDAN  = 1.5;   // R$/km — Sedan (1–4 pax)
+  const PRICE_PER_KM_VAN    = 2.2;   // R$/km — Van 7 lugares (5–6 pax)
   const MAX_SEDAN_PASSENGERS = 4;
+  const MIN_FARE = 20;               // Tarifa mínima
 
-  /** Tarifa mínima independente da distância */
-  const MIN_FARE = 15;
-
-  /* ── Helpers privados ────────────────────────────────────── */
-
-  /**
-   * Retorna a tarifa correta pelo número de passageiros.
-   * @param {number} passengers
-   * @returns {{ pricePerKm: number, vehicleLabel: string, requiresVan: boolean }}
-   */
-  function _getTariff(passengers) {
-    if (passengers > MAX_SEDAN_PASSENGERS) {
-      return { pricePerKm: PRICE_PER_KM_VAN, vehicleLabel: "Van 7 lugares", requiresVan: true };
-    }
-    return { pricePerKm: PRICE_PER_KM_SEDAN, vehicleLabel: "Sedan", requiresVan: false };
+  function _tariff(passengers) {
+    return passengers > MAX_SEDAN_PASSENGERS
+      ? { pricePerKm: PRICE_PER_KM_VAN,   vehicleLabel: 'Van 7 lugares', vehicleIcon: 'fa-van-shuttle', requiresVan: true  }
+      : { pricePerKm: PRICE_PER_KM_SEDAN, vehicleLabel: 'Sedan',         vehicleIcon: 'fa-car',         requiresVan: false };
   }
 
-  /* ── API pública ─────────────────────────────────────────── */
-
   /**
-   * Calcula o valor estimado — USO INTERNO APENAS.
-   * Nunca exibir `total` ou `pricePerKm` ao cliente.
-   *
-   * @param {number} km
-   * @param {number} passengers
-   * @returns {{ total: number, pricePerKm: number, vehicleLabel: string, requiresVan: boolean }}
+   * Calcula o valor estimado (USO INTERNO).
+   * Nunca exibir pricePerKm ao cliente.
    */
   function calculate(km, passengers) {
-    const tariff = _getTariff(passengers);
-    const raw    = km * tariff.pricePerKm;
-    const total  = parseFloat(Math.max(raw, MIN_FARE).toFixed(2));
-    return { total, pricePerKm: tariff.pricePerKm, vehicleLabel: tariff.vehicleLabel, requiresVan: tariff.requiresVan };
+    const t     = _tariff(passengers);
+    const total = parseFloat(Math.max(km * t.pricePerKm, MIN_FARE).toFixed(2));
+    return { total, ...t };
   }
 
   /**
-   * Retorna apenas o tipo de veículo (seguro para exibir ao cliente).
-   * @param {number} passengers
-   * @returns {{ vehicleLabel: string, requiresVan: boolean }}
+   * Retorna apenas informações de veículo — seguro para exibir.
    */
   function getVehicleInfo(passengers) {
-    const t = _getTariff(passengers);
-    return { vehicleLabel: t.vehicleLabel, requiresVan: t.requiresVan };
+    return _tariff(passengers);
   }
 
-  /** Formata BRL — uso interno na mensagem da equipe */
+  /** Formata valor em BRL (ex: "42,00") — sem prefixo R$ (o HTML coloca o sup) */
+  function formatAmount(value) {
+    return value.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+
+  /** Formata BRL completo para uso interno (mensagem da equipe) */
   function formatBRL(value) {
-    return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(value);
+    return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
   }
 
-  return { calculate, getVehicleInfo, formatBRL, MAX_SEDAN_PASSENGERS };
+  return { calculate, getVehicleInfo, formatAmount, formatBRL, MAX_SEDAN_PASSENGERS };
 
 })();
