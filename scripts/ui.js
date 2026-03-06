@@ -91,12 +91,147 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /* ── 6. DATA MÍNIMA ────────────────────────────────────── */
-  const dateInput = $('#date');
-  if (dateInput) {
+  const dateHidden = $('#date');
+  if (dateHidden) {
     const t = new Date();
     const iso = `${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,'0')}-${String(t.getDate()).padStart(2,'0')}`;
-    dateInput.min = iso;
+    dateHidden.min = iso;
   }
+
+  /* ── 6b. PICKERS DE DATA E HORÁRIO ──────────────────────── */
+  const dateOverlay   = $('#datePickerOverlay');
+  const dateTrigger  = $('#dateTrigger');
+  const dateDisplay  = $('#dateDisplay');
+  const calGrid      = $('#calGrid');
+  const calMonthYear = $('#calMonthYear');
+  const datePrevBtn  = $('#datePrevMonth');
+  const dateNextBtn  = $('#dateNextMonth');
+  const dateCancelBtn = $('#dateCancelBtn');
+
+  const timeOverlay    = $('#timePickerOverlay');
+  const timeTrigger   = $('#timeTrigger');
+  const timeDisplay   = $('#timeDisplay');
+  const timeHidden    = $('#time');
+  const hourDisp      = $('#hourDisplay');
+  const minDisp       = $('#minDisplay');
+  const timeCancelBtn = $('#timeCancelBtn');
+  const timeConfirmBtn = $('#timeConfirmBtn');
+
+  const MONTHS_PT = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+
+  let calView = new Date();
+  calView.setDate(1);
+  let selectedDate = null;
+  let tHour = 8, tMin = 0;
+
+  function openDatePicker() {
+    const now = new Date();
+    if (!selectedDate) calView = new Date(now.getFullYear(), now.getMonth(), 1);
+    renderCalendar();
+    dateOverlay?.classList.add('is-open');
+    dateOverlay?.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('no-scroll');
+  }
+  function closeDatePicker() {
+    dateOverlay?.classList.remove('is-open');
+    dateOverlay?.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('no-scroll');
+  }
+
+  function renderCalendar() {
+    const today = new Date(); today.setHours(0,0,0,0);
+    const year = calView.getFullYear();
+    const month = calView.getMonth();
+    calMonthYear.textContent = `${MONTHS_PT[month]} ${year}`;
+
+    const firstDay = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+    calGrid.innerHTML = '';
+    for (let i = 0; i < firstDay; i++) {
+      const empty = document.createElement('span');
+      empty.className = 'cal-day empty';
+      calGrid.appendChild(empty);
+    }
+    for (let d = 1; d <= daysInMonth; d++) {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'cal-day';
+      btn.textContent = d;
+      const thisDate = new Date(year, month, d);
+      thisDate.setHours(0,0,0,0);
+      if (thisDate < today) btn.disabled = true;
+      if (thisDate.getTime() === today.getTime()) btn.classList.add('today');
+      if (selectedDate && thisDate.getTime() === selectedDate.getTime()) btn.classList.add('selected');
+      btn.addEventListener('click', () => {
+        selectedDate = thisDate;
+        const iso = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+        dateHidden.value = iso;
+        dateDisplay.textContent = `${String(d).padStart(2,'0')}/${String(month+1).padStart(2,'0')}/${year}`;
+        dateTrigger?.classList.add('has-value');
+        closeDatePicker();
+        quoteResult?.classList.remove('show');
+        const errDate = $('#err-date');
+        if (errDate) { errDate.textContent = ''; errDate.classList.remove('show'); }
+        dateHidden?.classList.remove('field-error');
+      });
+      calGrid.appendChild(btn);
+    }
+  }
+
+  dateTrigger?.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); openDatePicker(); });
+  dateCancelBtn?.addEventListener('click', closeDatePicker);
+  dateOverlay?.querySelector('.picker-modal')?.addEventListener('click', (e) => e.stopPropagation());
+  dateOverlay?.addEventListener('click', (e) => { if (e.target === dateOverlay) closeDatePicker(); });
+  datePrevBtn?.addEventListener('click', () => { calView.setMonth(calView.getMonth()-1); renderCalendar(); });
+  dateNextBtn?.addEventListener('click', () => { calView.setMonth(calView.getMonth()+1); renderCalendar(); });
+
+  function openTimePicker() {
+    if (hourDisp) hourDisp.textContent = String(tHour).padStart(2,'0');
+    if (minDisp) minDisp.textContent = String(tMin).padStart(2,'0');
+    timeOverlay?.classList.add('is-open');
+    timeOverlay?.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('no-scroll');
+  }
+  function closeTimePicker() {
+    timeOverlay?.classList.remove('is-open');
+    timeOverlay?.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('no-scroll');
+  }
+
+  timeTrigger?.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); openTimePicker(); });
+  timeCancelBtn?.addEventListener('click', closeTimePicker);
+  timeOverlay?.querySelector('.picker-modal')?.addEventListener('click', (e) => e.stopPropagation());
+  timeOverlay?.addEventListener('click', (e) => { if (e.target === timeOverlay) closeTimePicker(); });
+
+  $$('.time-arr').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const dir = parseInt(btn.dataset.dir, 10);
+      const unit = btn.dataset.unit;
+      if (unit === 'h') tHour = (tHour + dir + 24) % 24;
+      if (unit === 'm') tMin = (tMin + dir + 60) % 60;
+      if (hourDisp) hourDisp.textContent = String(tHour).padStart(2,'0');
+      if (minDisp) minDisp.textContent = String(tMin).padStart(2,'0');
+    });
+  });
+
+  timeConfirmBtn?.addEventListener('click', () => {
+    const val = `${String(tHour).padStart(2,'0')}:${String(tMin).padStart(2,'0')}`;
+    if (timeHidden) timeHidden.value = val;
+    if (timeDisplay) timeDisplay.textContent = val;
+    timeTrigger?.classList.add('has-value');
+    closeTimePicker();
+    quoteResult?.classList.remove('show');
+    const errTime = $('#err-time');
+    if (errTime) { errTime.textContent = ''; errTime.classList.remove('show'); }
+    timeHidden?.classList.remove('field-error');
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Escape') return;
+    if (dateOverlay?.classList.contains('is-open')) closeDatePicker();
+    else if (timeOverlay?.classList.contains('is-open')) closeTimePicker();
+  });
 
   /* ── 7. MÁSCARA TELEFONE ───────────────────────────────── */
   const phoneInput = $('#phone');

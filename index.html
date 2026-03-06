@@ -390,17 +390,25 @@
         <p class="form-section-label">Data e horário</p>
         <div class="form-row">
           <div class="form-group">
-            <label class="form-label" for="date">
+            <label class="form-label" for="dateTrigger">
               <i class="fa-solid fa-calendar"></i> Data
             </label>
-            <input type="date" id="date" name="date" class="form-input" min="" />
+            <button type="button" id="dateTrigger" class="form-input picker-trigger" aria-haspopup="dialog">
+              <span id="dateDisplay">Selecione a data</span>
+              <i class="fa-solid fa-calendar"></i>
+            </button>
+            <input type="hidden" id="date" name="date" />
             <span class="field-msg" id="err-date" role="alert"></span>
           </div>
           <div class="form-group">
-            <label class="form-label" for="time">
+            <label class="form-label" for="timeTrigger">
               <i class="fa-solid fa-clock"></i> Horário
             </label>
-            <input type="time" id="time" name="time" class="form-input" />
+            <button type="button" id="timeTrigger" class="form-input picker-trigger" aria-haspopup="dialog">
+              <span id="timeDisplay">Selecione o horário</span>
+              <i class="fa-solid fa-clock"></i>
+            </button>
+            <input type="hidden" id="time" name="time" />
             <span class="field-msg" id="err-time" role="alert"></span>
           </div>
         </div>
@@ -888,6 +896,49 @@
   <i class="fa-brands fa-whatsapp"></i>
   <span>Fale conosco</span>
 </a>
+
+<!-- Modais de Data e Horário -->
+<div class="picker-overlay" id="datePickerOverlay" role="dialog" aria-modal="true" aria-label="Selecionar data" aria-hidden="true">
+  <div class="picker-modal" role="document">
+    <div class="picker-modal__header">
+      <button type="button" class="picker-nav" id="datePrevMonth" aria-label="Mês anterior"><i class="fa-solid fa-chevron-left"></i></button>
+      <span class="picker-modal__title" id="calMonthYear"></span>
+      <button type="button" class="picker-nav" id="dateNextMonth" aria-label="Próximo mês"><i class="fa-solid fa-chevron-right"></i></button>
+    </div>
+    <div class="cal-weekdays">
+      <span>Dom</span><span>Seg</span><span>Ter</span><span>Qua</span><span>Qui</span><span>Sex</span><span>Sáb</span>
+    </div>
+    <div class="cal-grid" id="calGrid"></div>
+    <div class="picker-modal__footer">
+      <button type="button" class="btn btn--outline btn--sm" id="dateCancelBtn">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<div class="picker-overlay" id="timePickerOverlay" role="dialog" aria-modal="true" aria-label="Selecionar horário" aria-hidden="true">
+  <div class="picker-modal picker-modal--time" role="document">
+    <div class="picker-modal__header">
+      <span class="picker-modal__title">Selecione o horário</span>
+    </div>
+    <div class="time-picker-body">
+      <div class="time-col">
+        <button type="button" class="time-arr" data-dir="-1" data-unit="h"><i class="fa-solid fa-chevron-up"></i></button>
+        <span class="time-display" id="hourDisplay">08</span>
+        <button type="button" class="time-arr" data-dir="1" data-unit="h"><i class="fa-solid fa-chevron-down"></i></button>
+      </div>
+      <span class="time-sep">:</span>
+      <div class="time-col">
+        <button type="button" class="time-arr" data-dir="-1" data-unit="m"><i class="fa-solid fa-chevron-up"></i></button>
+        <span class="time-display" id="minDisplay">00</span>
+        <button type="button" class="time-arr" data-dir="1" data-unit="m"><i class="fa-solid fa-chevron-down"></i></button>
+      </div>
+    </div>
+    <div class="picker-modal__footer">
+      <button type="button" class="btn btn--outline btn--sm" id="timeCancelBtn">Cancelar</button>
+      <button type="button" class="btn btn--primary btn--sm" id="timeConfirmBtn">Confirmar</button>
+    </div>
+  </div>
+</div>
 
 <!-- Scripts — ordem de dependência -->
 <script src="scripts/calculations.js"></script>
