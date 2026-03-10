@@ -117,3 +117,9 @@
   color: var(--ink);
 }
 .logo__name span { color: var(--green); }
+
+.logo__image {
+  height: 90px;
+  width: auto;
+  flex-shrink: 0;
+}

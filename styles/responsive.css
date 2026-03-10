@@ -55,4 +55,5 @@
   .stats-bar__inner   { grid-template-columns: repeat(2, 1fr); }
   .dep-card           { width: 250px; }
   .quote-result__meta { align-items: flex-start; }
+  .logo__image { height: 50px; }
 }
