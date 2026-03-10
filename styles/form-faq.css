@@ -172,6 +172,8 @@
   padding-right: 1.6rem;
   width: calc(100% + 3.2rem);
   max-width: none;
+  /* Necessário para o pac-container do Google Maps não ficar cortado */
+  overflow: visible;
 }
 .form-group--route { flex: 1; min-width: 0; width: 100%; }
 .input-with-icon--route { width: 100%; }
@@ -261,10 +263,7 @@
 }
 .van-notice.show { display: flex; }
 
-/* ── Resultado de Cotação ─────────────────────────────────
-   Aparece após todos os campos preenchidos.
-   Mostra o valor estimado (resultado), NÃO o cálculo.
-   ───────────────────────────────────────────────────────── */
+/* ── Resultado de Cotação ───────────────────────────────── */
 .quote-result {
   display: none;
   margin-top: 1.1rem;
@@ -282,7 +281,6 @@
   to   { opacity: 1; transform: none; }
 }
 
-/* Ornamento de fundo */
 .quote-result::before {
   content: '';
   position: absolute;
@@ -414,9 +412,7 @@
 .faq-question i { font-size: .73rem; color: var(--sky-mid); transition: transform var(--t-mid) var(--ease); flex-shrink: 0; }
 .faq-item[open] .faq-question i { transform: rotate(180deg); }
 .faq-question:hover { color: var(--sky-deep); }
-.faq-answer {
-  overflow: hidden;
-}
+.faq-answer { overflow: hidden; }
 .faq-item[open] .faq-answer {
   animation: faqSlideIn 0.28s var(--ease) forwards;
 }
@@ -425,7 +421,8 @@
   to { opacity: 1; transform: translateY(0); }
 }
 .faq-answer p { padding: 0 1.25rem 1rem; font-size: .89rem; color: var(--ink-60); line-height: 1.72; font-weight: 300; }
-/* ── Picker triggers (botões que abrem os modais) ────────── */
+
+/* ── Picker triggers ─────────────────────────────────────── */
 .picker-trigger {
   display: flex;
   align-items: center;
@@ -473,9 +470,7 @@
   transform: scale(0.95);
   transition: transform .2s var(--ease);
 }
-.picker-overlay.is-open .picker-modal {
-  transform: scale(1);
-}
+.picker-overlay.is-open .picker-modal { transform: scale(1); }
 
 .picker-modal__header {
   display: flex;
@@ -598,4 +593,81 @@
   font-weight: 300;
   color: var(--ink-30);
   line-height: 1;
+}
+
+/* ══════════════════════════════════════════════════════════
+   Google Places Autocomplete — pac-container
+   O dropdown do Google é injetado como filho direto do
+   <body>, fora do card. Precisa de z-index alto e estilos
+   próprios para combinar com o design do site.
+   ══════════════════════════════════════════════════════════ */
+
+/* Container principal do dropdown */
+.pac-container {
+  z-index: 10000 !important; /* acima dos modais (9999) */
+  border: 1.5px solid var(--line);
+  border-top: none;
+  border-radius: 0 0 var(--r-md) var(--r-md);
+  box-shadow: var(--sh-lg);
+  background: var(--white);
+  font-family: var(--font-body);
+  font-size: .9rem;
+  margin-top: -2px; /* cola no input */
+  overflow: hidden;
+}
+
+/* Remove o logo "powered by Google" — não é possível via CSS puro,
+   mas reduzimos o espaço que ele ocupa */
+.pac-container::after {
+  background-image: none !important;
+  height: 0 !important;
+  padding: 0 !important;
+}
+
+/* Cada item da lista */
+.pac-item {
+  padding: .65rem 1rem;
+  cursor: pointer;
+  border-top: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  line-height: 1.4;
+  transition: background var(--t-fast);
+  color: var(--ink);
+}
+.pac-item:first-child { border-top: none; }
+.pac-item:hover,
+.pac-item-selected {
+  background: var(--sky-10) !important;
+}
+
+/* Ícone de localização à esquerda de cada item */
+.pac-icon {
+  width: 16px !important;
+  height: 20px !important;
+  background-size: 16px !important;
+  margin-right: .25rem;
+  flex-shrink: 0;
+}
+
+/* Texto principal do endereço */
+.pac-item-query {
+  font-size: .88rem;
+  font-weight: 600;
+  color: var(--ink);
+  padding-right: .25rem;
+}
+
+/* Texto secundário (cidade, estado) */
+.pac-item span:not(.pac-icon):not(.pac-item-query) {
+  font-size: .8rem;
+  color: var(--ink-60);
+  font-weight: 400;
+}
+
+/* Destaque do texto que bate com o que foi digitado */
+.pac-matched {
+  color: var(--sky-deep);
+  font-weight: 700;
 }
