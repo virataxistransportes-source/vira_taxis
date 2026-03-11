@@ -3,3 +3,5 @@
 .env.production
 *.env
 config.js
+.vercel
+.env*.local

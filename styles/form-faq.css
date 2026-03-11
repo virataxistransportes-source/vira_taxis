@@ -77,7 +77,7 @@
   background: var(--white);
   border-radius: var(--r-xl);
   box-shadow: var(--sh-xl);
-  overflow: hidden;
+  overflow: visible;
 }
 .form-card__header {
   display: flex;
@@ -90,6 +90,7 @@
   font-weight: 600;
   font-size: .88rem;
   letter-spacing: .01em;
+  border-radius: var(--r-xl) var(--r-xl) 0 0;
 }
 .form-card__header i { color: var(--sky); }
 .form-card form { padding: 1.6rem; }
@@ -164,7 +165,7 @@
   pointer-events: none;
 }
 
-/* Origem e destino — mais espaço, mais largos, texto próximo ao ícone */
+/* Origem e destino */
 .form-route-section {
   margin-left: -1.6rem;
   margin-right: -1.6rem;
@@ -172,7 +173,6 @@
   padding-right: 1.6rem;
   width: calc(100% + 3.2rem);
   max-width: none;
-  /* Necessário para o pac-container do Google Maps não ficar cortado */
   overflow: visible;
 }
 .form-group--route { flex: 1; min-width: 0; width: 100%; }
@@ -595,79 +595,48 @@
   line-height: 1;
 }
 
-/* ══════════════════════════════════════════════════════════
-   Google Places Autocomplete — pac-container
-   O dropdown do Google é injetado como filho direto do
-   <body>, fora do card. Precisa de z-index alto e estilos
-   próprios para combinar com o design do site.
-   ══════════════════════════════════════════════════════════ */
-
-/* Container principal do dropdown */
+/* ── Google Maps Autocomplete Dropdown ───────────────────── */
 .pac-container {
-  z-index: 10000 !important; /* acima dos modais (9999) */
+  z-index: 10000 !important;
   border: 1.5px solid var(--line);
-  border-top: none;
   border-radius: 0 0 var(--r-md) var(--r-md);
-  box-shadow: var(--sh-lg);
-  background: var(--white);
+  box-shadow: var(--sh-md);
   font-family: var(--font-body);
-  font-size: .9rem;
-  margin-top: -2px; /* cola no input */
+  background: var(--white);
+  margin-top: 2px;
   overflow: hidden;
 }
-
-/* Remove o logo "powered by Google" — não é possível via CSS puro,
-   mas reduzimos o espaço que ele ocupa */
 .pac-container::after {
   background-image: none !important;
   height: 0 !important;
   padding: 0 !important;
 }
-
-/* Cada item da lista */
 .pac-item {
-  padding: .65rem 1rem;
-  cursor: pointer;
+  padding: .55rem .9rem;
+  font-size: .87rem;
+  color: var(--ink-60);
   border-top: 1px solid var(--line);
+  cursor: pointer;
+  line-height: 1.4;
   display: flex;
   align-items: center;
   gap: .5rem;
-  line-height: 1.4;
-  transition: background var(--t-fast);
-  color: var(--ink);
 }
 .pac-item:first-child { border-top: none; }
 .pac-item:hover,
 .pac-item-selected {
-  background: var(--sky-10) !important;
+  background: var(--sky-10);
 }
-
-/* Ícone de localização à esquerda de cada item */
-.pac-icon {
-  width: 16px !important;
-  height: 20px !important;
-  background-size: 16px !important;
-  margin-right: .25rem;
-  flex-shrink: 0;
-}
-
-/* Texto principal do endereço */
 .pac-item-query {
-  font-size: .88rem;
+  font-size: .89rem;
   font-weight: 600;
   color: var(--ink);
-  padding-right: .25rem;
+  padding-right: .35rem;
 }
+.pac-matched { color: var(--sky-deep); font-weight: 700; }
+.pac-icon { display: none !important; }
 
-/* Texto secundário (cidade, estado) */
-.pac-item span:not(.pac-icon):not(.pac-item-query) {
-  font-size: .8rem;
-  color: var(--ink-60);
-  font-weight: 400;
-}
-
-/* Destaque do texto que bate com o que foi digitado */
-.pac-matched {
-  color: var(--sky-deep);
-  font-weight: 700;
+/* Esconde dropdown após seleção */
+body.pac-hide .pac-container {
+  display: none !important;
 }
