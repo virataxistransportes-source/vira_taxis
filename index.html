@@ -358,7 +358,7 @@
             </label>
             <input type="text" id="name" name="name" class="form-input"
               placeholder="Seu nome completo" autocomplete="name"
-              maxlength="100" />
+              maxlength="100" required aria-required="true" />
             <span class="field-msg" id="err-name" role="alert"></span>
           </div>
           <div class="form-group">
@@ -366,7 +366,7 @@
               <i class="fa-solid fa-phone"></i> Telefone / WhatsApp
             </label>
             <input type="tel" id="phone" name="phone" class="form-input"
-              placeholder="(19) 99999-9999" autocomplete="tel" maxlength="16" />
+              placeholder="(19) 99999-9999" autocomplete="tel" maxlength="16" required aria-required="true" />
             <span class="field-msg" id="err-phone" role="alert"></span>
           </div>
         </div>
@@ -383,7 +383,7 @@
                 <input type="text" id="origin" name="origin" class="form-input form-input--route"
                   placeholder="Ex: Shopping Iguatemi, Campinas – SP"
                   autocomplete="off" data-maps-autocomplete="origin"
-                  maxlength="300" />
+                  maxlength="300" required aria-required="true" />
                 <span class="input-icon"><i class="fa-solid fa-location-crosshairs"></i></span>
               </div>
               <span class="field-msg" id="err-origin" role="alert"></span>
@@ -398,7 +398,7 @@
                 <input type="text" id="destination" name="destination" class="form-input form-input--route"
                   placeholder="Ex: Aeroporto de Viracopos – Campinas, SP"
                   autocomplete="off" data-maps-autocomplete="destination"
-                  maxlength="300" />
+                  maxlength="300" required aria-required="true" />
                 <span class="input-icon"><i class="fa-solid fa-map-location-dot"></i></span>
               </div>
               <span class="field-msg" id="err-destination" role="alert"></span>
@@ -413,7 +413,7 @@
             <label class="form-label" for="dateTrigger">
               <i class="fa-solid fa-calendar"></i> Data
             </label>
-            <button type="button" id="dateTrigger" class="form-input picker-trigger" aria-haspopup="dialog">
+            <button type="button" id="dateTrigger" class="form-input picker-trigger" aria-haspopup="dialog" aria-required="true">
               <span id="dateDisplay">Selecione a data</span>
               <i class="fa-solid fa-calendar"></i>
             </button>
@@ -424,7 +424,7 @@
             <label class="form-label" for="timeTrigger">
               <i class="fa-solid fa-clock"></i> Horário
             </label>
-            <button type="button" id="timeTrigger" class="form-input picker-trigger" aria-haspopup="dialog">
+            <button type="button" id="timeTrigger" class="form-input picker-trigger" aria-haspopup="dialog" aria-required="true">
               <span id="timeDisplay">Selecione o horário</span>
               <i class="fa-solid fa-clock"></i>
             </button>
@@ -955,6 +955,7 @@
         <button type="button" class="time-arr" data-dir="1" data-unit="m"><i class="fa-solid fa-chevron-down"></i></button>
       </div>
     </div>
+    <p class="time-picker-err" id="timePickerErr" role="alert" aria-live="polite"></p>
     <div class="picker-modal__footer">
       <button type="button" class="btn btn--outline btn--sm" id="timeCancelBtn">Cancelar</button>
       <button type="button" class="btn btn--primary btn--sm" id="timeConfirmBtn">Confirmar</button>

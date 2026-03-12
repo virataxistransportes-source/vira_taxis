@@ -194,7 +194,35 @@ document.addEventListener('DOMContentLoaded', () => {
   datePrevBtn?.addEventListener('click', () => { calView.setMonth(calView.getMonth()-1); renderCalendar(); });
   dateNextBtn?.addEventListener('click', () => { calView.setMonth(calView.getMonth()+1); renderCalendar(); });
 
+  const timePickerErr = $('#timePickerErr');
+
+  function _isToday(isoDate) {
+    if (!isoDate || !/^\d{4}-\d{2}-\d{2}$/.test(isoDate)) return false;
+    const today = new Date();
+    const y = today.getFullYear(), m = today.getMonth() + 1, d = today.getDate();
+    const [yy, mm, dd] = isoDate.split('-').map(Number);
+    return yy === y && mm === m && dd === d;
+  }
+
+  function _setTimePickerDefaultForToday() {
+    const now = new Date();
+    let h = now.getHours();
+    let m = now.getMinutes() + 30;
+    if (m >= 60) { h += 1; m -= 60; }
+    if (h >= 24) { h = 23; m = 59; }
+    tHour = h;
+    tMin = m;
+  }
+
   function openTimePicker() {
+    if (timePickerErr) { timePickerErr.textContent = ''; timePickerErr.classList.remove('show'); }
+    const isoDate = dateHidden?.value ?? '';
+    if (_isToday(isoDate)) {
+      _setTimePickerDefaultForToday();
+    } else {
+      tHour = 8;
+      tMin = 0;
+    }
     if (hourDisp) hourDisp.textContent = String(tHour).padStart(2,'0');
     if (minDisp)  minDisp.textContent  = String(tMin).padStart(2,'0');
     timeOverlay?.classList.add('is-open');
@@ -230,7 +258,24 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  function _isTimeInPast(hour, min) {
+    const now = new Date();
+    const nowH = now.getHours(), nowM = now.getMinutes();
+    if (hour < nowH) return true;
+    if (hour === nowH && min <= nowM) return true;
+    return false;
+  }
+
   timeConfirmBtn?.addEventListener('click', () => {
+    const isoDate = dateHidden?.value ?? '';
+    if (_isToday(isoDate) && _isTimeInPast(tHour, tMin)) {
+      if (timePickerErr) {
+        timePickerErr.textContent = 'Para hoje, selecione um horário que ainda não passou.';
+        timePickerErr.classList.add('show');
+      }
+      return;
+    }
+    if (timePickerErr) { timePickerErr.textContent = ''; timePickerErr.classList.remove('show'); }
     const val = `${String(tHour).padStart(2,'0')}:${String(tMin).padStart(2,'0')}`;
     if (timeHidden)  timeHidden.value        = val;
     if (timeDisplay) timeDisplay.textContent = val;
@@ -375,6 +420,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function clearErrors() {
     $$('.form-input').forEach(el => el.classList.remove('field-error'));
+    $('#passengers')?.classList.remove('field-error');
+    $('#luggage')?.classList.remove('field-error');
     $$('.field-msg').forEach(el => { el.textContent = ''; el.classList.remove('show'); });
   }
 
@@ -444,6 +491,10 @@ document.addEventListener('DOMContentLoaded', () => {
         Object.entries(errors).forEach(([f, m]) => setFieldError(f, m));
         const firstErrorMsg = form?.querySelector('.field-msg.show');
         if (firstErrorMsg) firstErrorMsg.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        const firstInvalid = Object.keys(errors)[0];
+        const focusIds = { name: 'name', phone: 'phone', origin: 'origin', destination: 'destination', date: 'dateTrigger', time: 'timeTrigger', passengers: 'btnMinus', luggage: 'btnLuggageMinus' };
+        const toFocus = focusIds[firstInvalid] ? $(`#${focusIds[firstInvalid]}`) : null;
+        if (toFocus) toFocus.focus({ preventScroll: true });
         return;
       }
 
