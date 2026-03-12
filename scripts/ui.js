@@ -419,80 +419,85 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   quoteBtn?.addEventListener('click', () => {
-    // Rate limiting
-    if (_isRateLimited()) {
-      // Feedback visual discreto
-      quoteBtn.disabled = true;
-      setTimeout(() => { quoteBtn.disabled = false; }, 3000);
-      return;
-    }
-
-    clearErrors();
-
-    const raw = {
-      name:        $('#name')?.value        ?? '',
-      phone:       $('#phone')?.value       ?? '',
-      origin:      $('#origin')?.value      ?? '',
-      destination: $('#destination')?.value ?? '',
-      date:        $('#date')?.value        ?? '',
-      time:        $('#time')?.value        ?? '',
-      passengers:  String(passengers),
-      luggage:     String(luggage),
-    };
-
-    const { valid, errors } = Validations.validateForm(raw);
-    if (!valid) {
-      Object.entries(errors).forEach(([f, m]) => setFieldError(f, m));
-      form?.querySelector('.field-error')
-        ?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      return;
-    }
-
-    const pax     = Math.max(1, Math.min(6, parseInt(raw.passengers, 10) || 1));
-    const luggage = Math.max(0, Math.min(20, parseInt(raw.luggage, 10) || 0));
-    const info    = Pricing.getVehicleInfo(pax);
-    const km      = MapsService.isActive() ? MapsService.getDistanceKm() : (_currentKm || _guessKm());
-    const pricing = (km && Number.isFinite(km)) ? Pricing.calculate(km, pax) : {};
-
-    quoteBtn.classList.add('loading');
-    quoteBtn.disabled = true;
-
-    quoteResult?.classList.add('show');
-
-    // Usa textContent — NUNCA innerHTML com dados do usuário
-    if (quoteVehicleIcon)  quoteVehicleIcon.className   = `fa-solid ${info.vehicleIcon}`;
-    if (quoteVehicleLabel) quoteVehicleLabel.textContent = info.vehicleLabel;
-    if (quoteAmount)       quoteAmount.textContent       = (km && pricing.total) ? Pricing.formatAmount(pricing.total) : '--';
-    if (quoteDistNote)     quoteDistNote.textContent     = km ? `~${km} km estimados` : 'Preço confirmado via WhatsApp';
-
-    // Constrói e valida URL do WhatsApp antes de atribuir ao href
-    const waUrl = WhatsApp.getUrl({
-      name: raw.name, phone: raw.phone,
-      origin: raw.origin, destination: raw.destination,
-      date: raw.date, time: raw.time,
-      passengers: pax, luggage,
-      vehicleLabel: info.vehicleLabel,
-      requiresVan: info.requiresVan,
-      estimatedKm: km,
-      total: pricing.total ?? null,
-      pricePerKm: null, // NUNCA passa pricePerKm — não deve ir ao cliente
-    });
-
-    if (whatsappBtn) {
-      if (_isValidWhatsAppUrl(waUrl)) {
-        whatsappBtn.setAttribute('href', waUrl);
-      } else {
-        whatsappBtn.setAttribute('href', '#');
-        console.warn('ViraTáxis: URL WhatsApp inválida bloqueada.');
+    try {
+      if (_isRateLimited()) {
+        quoteBtn.disabled = true;
+        setTimeout(() => { quoteBtn.disabled = false; }, 3000);
+        return;
       }
-    }
 
-    quoteResult?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      clearErrors();
 
-    setTimeout(() => {
+      const raw = {
+        name:        ($('#name')?.value ?? '').trim(),
+        phone:       $('#phone')?.value ?? '',
+        origin:      ($('#origin')?.value ?? '').trim(),
+        destination: ($('#destination')?.value ?? '').trim(),
+        date:        $('#date')?.value ?? '',
+        time:        $('#time')?.value ?? '',
+        passengers:  String(passengers),
+        luggage:     String(luggage),
+      };
+
+      const { valid, errors } = Validations.validateForm(raw);
+      if (!valid) {
+        Object.entries(errors).forEach(([f, m]) => setFieldError(f, m));
+        const firstErrorMsg = form?.querySelector('.field-msg.show');
+        if (firstErrorMsg) firstErrorMsg.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
+      }
+
+      const paxNum     = Math.max(1, Math.min(6, parseInt(raw.passengers, 10) || 1));
+      const luggageNum = Math.max(0, Math.min(20, parseInt(raw.luggage, 10) || 0));
+      const info       = Pricing.getVehicleInfo(paxNum);
+      const km         = MapsService.isActive() ? MapsService.getDistanceKm() : (_currentKm || _guessKm());
+      const pricing    = (km && Number.isFinite(km)) ? Pricing.calculate(km, paxNum) : {};
+
+      quoteBtn.classList.add('loading');
+      quoteBtn.disabled = true;
+
+      quoteResult?.classList.add('show');
+
+      if (quoteVehicleIcon)  quoteVehicleIcon.className   = `fa-solid ${info.vehicleIcon}`;
+      if (quoteVehicleLabel) quoteVehicleLabel.textContent = info.vehicleLabel;
+      if (quoteAmount)       quoteAmount.textContent       = (km && pricing.total) ? Pricing.formatAmount(pricing.total) : '--';
+      if (quoteDistNote)     quoteDistNote.textContent     = km ? `~${km} km estimados` : 'Preço confirmado via WhatsApp';
+
+      const waUrl = WhatsApp.getUrl({
+        name: raw.name, phone: raw.phone,
+        origin: raw.origin, destination: raw.destination,
+        date: raw.date, time: raw.time,
+        passengers: paxNum, luggage: luggageNum,
+        vehicleLabel: info.vehicleLabel,
+        requiresVan: info.requiresVan,
+        estimatedKm: km,
+        total: pricing.total ?? null,
+        pricePerKm: null,
+      });
+
+      if (whatsappBtn) {
+        if (_isValidWhatsAppUrl(waUrl)) {
+          whatsappBtn.setAttribute('href', waUrl);
+        } else {
+          whatsappBtn.setAttribute('href', '#');
+          console.warn('ViraTáxis: URL WhatsApp inválida bloqueada.');
+        }
+      }
+
+      quoteResult?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+      setTimeout(() => {
+        quoteBtn.classList.remove('loading');
+        quoteBtn.disabled = false;
+      }, 400);
+    } catch (err) {
+      console.error('ViraTáxis cotação:', err);
       quoteBtn.classList.remove('loading');
       quoteBtn.disabled = false;
-    }, 400);
+      quoteResult?.classList.add('show');
+      if (quoteAmount) quoteAmount.textContent = '--';
+      if (quoteDistNote) quoteDistNote.textContent = 'Erro ao calcular. Tente novamente.';
+    }
   });
 
   /* ── 14. WHATSAPP FLOAT ────────────────────────────────── */
