@@ -34,6 +34,15 @@
   .depoimentos__track { gap: 1rem; }
 
   .trust-sep { display: none; }
+
+  /* Evita zoom ao focar em inputs no iOS (font-size >= 16px) e arraste horizontal */
+  .form-input,
+  .form-input::placeholder {
+    font-size: 16px !important;
+  }
+  .input-with-icon--route .form-input--route {
+    font-size: 16px !important;
+  }
 }
 
 /* ── Mobile (≤ 600px) ────────────────────────────────────── */

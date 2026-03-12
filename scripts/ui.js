@@ -212,8 +212,15 @@ document.addEventListener('DOMContentLoaded', () => {
   timeOverlay?.querySelector('.picker-modal')?.addEventListener('click', (e) => e.stopPropagation());
   timeOverlay?.addEventListener('click', (e) => { if (e.target === timeOverlay) closeTimePicker(); });
 
+  let _timeArrCooldown = false;
+  const TIME_ARR_COOLDOWN_MS = 320;
   $$('.time-arr').forEach(btn => {
-    btn.addEventListener('click', () => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (_timeArrCooldown) return;
+      _timeArrCooldown = true;
+      setTimeout(() => { _timeArrCooldown = false; }, TIME_ARR_COOLDOWN_MS);
+
       const dir  = parseInt(btn.dataset.dir, 10);
       const unit = btn.dataset.unit;
       if (unit === 'h') tHour = (tHour + dir + 24) % 24;
