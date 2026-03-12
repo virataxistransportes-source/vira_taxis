@@ -278,6 +278,25 @@ document.addEventListener('DOMContentLoaded', () => {
   btnPlus?.addEventListener('click',  () => updatePassengers(passengers + 1));
   updatePassengers(1);
 
+  /* ── 8b. STEPPER DE BAGAGENS ────────────────────────────── */
+  const luggageDisplay   = $('#luggageDisplay');
+  const luggageHidden    = $('#luggage');
+  const btnLuggageMinus  = $('#btnLuggageMinus');
+  const btnLuggagePlus   = $('#btnLuggagePlus');
+  let luggage = 0;
+
+  function updateLuggage(val) {
+    luggage = Math.max(0, Math.min(20, val));
+    if (luggageDisplay) luggageDisplay.textContent = luggage;
+    if (luggageHidden)  luggageHidden.value        = String(luggage);
+    if (btnLuggageMinus) btnLuggageMinus.disabled  = luggage <= 0;
+    if (btnLuggagePlus)  btnLuggagePlus.disabled   = luggage >= 20;
+    if (luggageHidden) luggageHidden.dispatchEvent(new Event('change', { bubbles: true }));
+  }
+  btnLuggageMinus?.addEventListener('click', () => updateLuggage(luggage - 1));
+  btnLuggagePlus?.addEventListener('click',  () => updateLuggage(luggage + 1));
+  updateLuggage(0);
+
   /* ── 9. COTAÇÃO ─────────────────────────────────────────── */
   const quoteResult       = $('#quoteResult');
   const quoteAmount       = $('#quoteAmount');
@@ -315,6 +334,8 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   btnMinus?.addEventListener('click', () => quoteResult?.classList.remove('show'));
   btnPlus?.addEventListener('click',  () => quoteResult?.classList.remove('show'));
+  btnLuggageMinus?.addEventListener('click', () => quoteResult?.classList.remove('show'));
+  btnLuggagePlus?.addEventListener('click',  () => quoteResult?.classList.remove('show'));
 
   /* ── 10. VALIDAÇÃO INLINE ──────────────────────────────── */
   function setFieldError(id, msg) {
@@ -409,7 +430,7 @@ document.addEventListener('DOMContentLoaded', () => {
       date:        $('#date')?.value        ?? '',
       time:        $('#time')?.value        ?? '',
       passengers:  String(passengers),
-      luggage:     $('#luggage')?.value     ?? '0',
+      luggage:     String(luggage),
     };
 
     const { valid, errors } = Validations.validateForm(raw);
