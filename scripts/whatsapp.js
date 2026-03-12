@@ -11,7 +11,7 @@
 
 const WhatsApp = (() => {
 
-  const WHATSAPP_NUMBER = '5519991865431'; // Campinas DDD 19
+  const WHATSAPP_NUMBER = '5519988244480'; // Campinas DDD 19
 
   /** Valida que o número é somente dígitos (proteção contra injeção) */
   function _safeNumber(num) {
