@@ -239,6 +239,7 @@
   transition: background var(--t-fast), color var(--t-fast), transform var(--t-fast);
 }
 .social-btn:hover { background: var(--sky); color: var(--ink); transform: translateY(-2px); }
+.social-btn--ig:hover { background: #C13584; color: var(--white); transform: translateY(-2px); }
 .social-btn--wa:hover { background: #25D366; color: var(--white); }
 
 /* Footer cols */
