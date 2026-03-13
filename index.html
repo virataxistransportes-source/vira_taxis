@@ -62,9 +62,10 @@
     </a>
     <nav class="nav" aria-label="Menu principal">
       <ul class="nav__list">
+        <li><a href="#agendamento" class="nav__link">Cotação</a></li>
         <li><a href="#historia"    class="nav__link">Nossa história</a></li>
-        <li><a href="#servicos"    class="nav__link">Serviços</a></li>
-        <li><a href="#agendamento" class="nav__link">Agendamento</a></li>
+        <li><a href="#servicos"    class="nav__link">Soluções</a></li>
+        <li><a href="#depoimentos" class="nav__link">Depoimentos</a></li>
         <li><a href="#faq"         class="nav__link">FAQ</a></li>
         <li>
           <a href="#agendamento" class="btn btn--primary nav__cta">
@@ -80,9 +81,10 @@
 </header>
 
 <nav class="mobile-nav" id="mobileMenu" aria-label="Menu mobile">
+  <a href="#agendamento" class="mobile-nav__link">Cotação</a>
   <a href="#historia"    class="mobile-nav__link">Nossa história</a>
-  <a href="#servicos"    class="mobile-nav__link">Serviços</a>
-  <a href="#agendamento" class="mobile-nav__link">Agendamento</a>
+  <a href="#servicos"    class="mobile-nav__link">Soluções</a>
+  <a href="#depoimentos" class="mobile-nav__link">Depoimentos</a>
   <a href="#faq"         class="mobile-nav__link">FAQ</a>
   <a href="#agendamento" class="btn btn--primary btn--full">
     <i class="fa-solid fa-calendar-check"></i> Agendar viagem
@@ -975,7 +977,7 @@
 <script src="scripts/whatsapp.js"></script>
 <script src="scripts/maps.js"></script>
 <script src="scripts/ui.js"></script>
-  <!-- Chave injetada no build a partir de GOOGLE_MAPS_KEY (Vercel / .env). -->
+  <!-- Chave injetada no build a partir de __GOOGLE_MAPS_KEY__ (Vercel / .env). -->
   <script 
   src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB2B8iM2A5zrmjw_EGNMfOaOQ3jmgyiSq0&libraries=places&callback=initGoogleMaps" 
   async defer>
