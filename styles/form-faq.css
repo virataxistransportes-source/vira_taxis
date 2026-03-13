@@ -21,8 +21,8 @@
   position: relative;
   z-index: 1;
   display: grid;
-  grid-template-columns: 1fr 1.4fr;
-  gap: 4.5rem;
+  grid-template-columns: 1.05fr 1.45fr;
+  gap: 4rem;
   align-items: start;
 }
 
@@ -72,18 +72,24 @@
 }
 .contact-pill i { color: var(--sky-mid); font-size: .9rem; }
 
+/* Prova social reaproveitando estilo do hero */
+.agendamento__trust {
+  margin-top: 1.25rem;
+}
+
 /* Card do formulário */
 .form-card {
   background: var(--white);
   border-radius: var(--r-xl);
-  box-shadow: var(--sh-xl);
+  box-shadow: var(--sh-lg);
+  border: 1px solid var(--line);
   overflow: visible;
 }
 .form-card__header {
   display: flex;
   align-items: center;
   gap: .65rem;
-  background: var(--ink);
+  background: linear-gradient(135deg, var(--ink) 0%, #1a3248 55%, #0c1929 100%);
   color: var(--white);
   padding: 1rem 1.6rem;
   font-family: var(--font-body);
