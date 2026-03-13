@@ -11,27 +11,47 @@
 const Pricing = (() => {
 
   /* Tarifas internas — não expor ao cliente */
-  const PRICE_PER_KM_SEDAN  = 5.0;   // R$/km — Sedan (1–4 pax)
-  const PRICE_PER_KM_VAN    = 6.0;   // R$/km — Van 7 lugares (5–6 pax)
   const MAX_SEDAN_PASSENGERS = 4;
   const MIN_FARE = 20;               // Tarifa mínima
+  const KM_THRESHOLD = 30;           // Faixa de preço: até 30 km vs acima de 30 km
+
+  /* Até 30 km */
+  const PRICE_PER_KM_SEDAN_UP_TO_30   = 6.0;   // R$/km — 5 lugares
+  const PRICE_PER_KM_VAN_UP_TO_30     = 7.0;   // R$/km — 7 lugares
+  /* Acima de 30 km */
+  const PRICE_PER_KM_SEDAN_ABOVE_30   = 5.0;
+  const PRICE_PER_KM_VAN_ABOVE_30     = 6.0;
+
+  function _getPricePerKm(km, requiresVan) {
+    const distance = Math.max(0, parseInt(km, 10) || 0);
+    if (distance <= KM_THRESHOLD) {
+      return requiresVan ? PRICE_PER_KM_VAN_UP_TO_30 : PRICE_PER_KM_SEDAN_UP_TO_30;
+    }
+    return requiresVan ? PRICE_PER_KM_VAN_ABOVE_30 : PRICE_PER_KM_SEDAN_ABOVE_30;
+  }
 
   function _tariff(passengers) {
-    return passengers > MAX_SEDAN_PASSENGERS
-      ? { pricePerKm: PRICE_PER_KM_VAN,   vehicleLabel: 'Carro 7 lugares', vehicleIcon: 'fa-van-shuttle', requiresVan: true  }
-      : { pricePerKm: PRICE_PER_KM_SEDAN, vehicleLabel: 'Sedan',           vehicleIcon: 'fa-car',         requiresVan: false };
+    const requiresVan = passengers > MAX_SEDAN_PASSENGERS;
+    return {
+      vehicleLabel: requiresVan ? 'Carro 7 lugares' : 'Sedan',
+      vehicleIcon:  requiresVan ? 'fa-van-shuttle' : 'fa-car',
+      requiresVan,
+    };
   }
 
   /**
    * Calcula o valor estimado (USO INTERNO).
+   * Até 30 km: sedan R$ 6,00/km, van R$ 7,00/km.
+   * Acima de 30 km: sedan R$ 5,00/km, van R$ 6,00/km.
    * Nunca exibir pricePerKm ao cliente.
    */
   function calculate(km, passengers) {
     const pax = Math.max(1, Math.min(6, parseInt(passengers, 10) || 1));
     const distance = Math.max(1, parseInt(km, 10) || 1);
-    const t     = _tariff(pax);
-    const total = parseFloat(Math.max(distance * t.pricePerKm, MIN_FARE).toFixed(2));
-    return { total, ...t };
+    const t = _tariff(pax);
+    const pricePerKm = _getPricePerKm(distance, t.requiresVan);
+    const total = parseFloat(Math.max(distance * pricePerKm, MIN_FARE).toFixed(2));
+    return { total, pricePerKm, ...t };
   }
 
   /**
