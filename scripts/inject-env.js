@@ -20,13 +20,28 @@ try {
   // dotenv não instalado — usa só process.env (ex.: Vercel)
 }
 
-const key = process.env.GOOGLE_MAPS_KEY;
-if (!key || typeof key !== 'string' || !key.trim()) {
-  console.error('inject-env: GOOGLE_MAPS_KEY não definida. Defina na Vercel (Settings → Environment Variables) ou no .env.');
+// Aceita GOOGLE_MAPS_KEY ou GOOGLE_MAPS_API_KEY (nome comum na Vercel)
+const key = (process.env.GOOGLE_MAPS_KEY || process.env.GOOGLE_MAPS_API_KEY || '').trim();
+if (!key) {
+  console.error('');
+  console.error('inject-env: variável de ambiente da chave do Google Maps não encontrada.');
+  console.error('  Nome esperado: GOOGLE_MAPS_KEY ou GOOGLE_MAPS_API_KEY');
+  if (process.env.VERCEL) {
+    console.error('  Na Vercel: Project → Settings → Environment Variables');
+    console.error('  Adicione GOOGLE_MAPS_KEY para Production (e Preview se quiser).');
+  } else {
+    console.error('  Local: crie um arquivo .env na raiz com GOOGLE_MAPS_KEY=sua_chave');
+  }
+  console.error('');
   process.exit(1);
 }
 
-const htmlPath = path.join(__dirname, '..', 'index.html');
+const rootDir = path.resolve(__dirname, '..');
+const htmlPath = path.join(rootDir, 'index.html');
+if (!fs.existsSync(htmlPath)) {
+  console.error('inject-env: index.html não encontrado em', htmlPath);
+  process.exit(1);
+}
 let html = fs.readFileSync(htmlPath, 'utf8');
 
 if (!html.includes('__GOOGLE_MAPS_KEY__')) {
