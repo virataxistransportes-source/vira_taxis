@@ -163,6 +163,22 @@
   border-color: #e53e3e;
   box-shadow: 0 0 0 3px rgba(229,62,62,.1);
 }
+
+/* Telefone com seletor de país */
+.phone-field {
+  display: flex;
+  align-items: stretch;
+  gap: .4rem;
+}
+.phone-country__select {
+  max-width: 130px;
+  padding-right: .6rem;
+  padding-left: .7rem;
+  font-size: .85rem;
+}
+.phone-input {
+  flex: 1 1 0;
+}
 /* Input-with-icon */
 .input-with-icon { position: relative; }
 .input-with-icon .form-input { padding-right: 2.5rem; }

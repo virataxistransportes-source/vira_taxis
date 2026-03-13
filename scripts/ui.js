@@ -20,6 +20,55 @@ document.addEventListener('DOMContentLoaded', () => {
   const footerYear = $('#footerYear');
   if (footerYear) footerYear.textContent = new Date().getFullYear();
 
+  /* ── 0. PAÍSES / DDI PARA TELEFONE ───────────────────────── */
+  const PHONE_COUNTRIES = [
+    { code: 'BR', dial: '+55',  name: 'Brasil' },
+    { code: 'US', dial: '+1',   name: 'Estados Unidos' },
+    { code: 'CA', dial: '+1',   name: 'Canadá' },
+    { code: 'AR', dial: '+54',  name: 'Argentina' },
+    { code: 'CL', dial: '+56',  name: 'Chile' },
+    { code: 'UY', dial: '+598', name: 'Uruguai' },
+    { code: 'PY', dial: '+595', name: 'Paraguai' },
+    { code: 'BO', dial: '+591', name: 'Bolívia' },
+    { code: 'PE', dial: '+51',  name: 'Peru' },
+    { code: 'CO', dial: '+57',  name: 'Colômbia' },
+    { code: 'MX', dial: '+52',  name: 'México' },
+    { code: 'PT', dial: '+351', name: 'Portugal' },
+    { code: 'ES', dial: '+34',  name: 'Espanha' },
+    { code: 'FR', dial: '+33',  name: 'França' },
+    { code: 'DE', dial: '+49',  name: 'Alemanha' },
+    { code: 'IT', dial: '+39',  name: 'Itália' },
+    { code: 'GB', dial: '+44',  name: 'Reino Unido' },
+    { code: 'IE', dial: '+353', name: 'Irlanda' },
+    { code: 'NL', dial: '+31',  name: 'Holanda' },
+    { code: 'BE', dial: '+32',  name: 'Bélgica' },
+    { code: 'CH', dial: '+41',  name: 'Suíça' },
+    { code: 'SE', dial: '+46',  name: 'Suécia' },
+    { code: 'NO', dial: '+47',  name: 'Noruega' },
+    { code: 'DK', dial: '+45',  name: 'Dinamarca' },
+    { code: 'FI', dial: '+358', name: 'Finlândia' },
+    { code: 'CN', dial: '+86',  name: 'China' },
+    { code: 'JP', dial: '+81',  name: 'Japão' },
+    { code: 'KR', dial: '+82',  name: 'Coreia do Sul' },
+    { code: 'AU', dial: '+61',  name: 'Austrália' },
+    { code: 'NZ', dial: '+64',  name: 'Nova Zelândia' },
+    { code: 'ZA', dial: '+27',  name: 'África do Sul' },
+    { code: 'AE', dial: '+971', name: 'Emirados Árabes Unidos' },
+    { code: 'IL', dial: '+972', name: 'Israel' },
+    { code: 'TR', dial: '+90',  name: 'Turquia' },
+    { code: 'RU', dial: '+7',   name: 'Rússia' },
+    { code: 'IN', dial: '+91',  name: 'Índia' }
+    // Lista reduzida para manter performance e foco em países mais comuns.
+  ];
+
+  function codeToFlag(code) {
+    if (!code || code.length !== 2) return '';
+    const base = 0x1F1E6;
+    const A = 'A'.charCodeAt(0);
+    const chars = code.toUpperCase().split('').map(c => String.fromCodePoint(base + c.charCodeAt(0) - A));
+    return chars.join('');
+  }
+
   /* ── 1. HEADER SCROLL ──────────────────────────────────── */
   const header = $('#header');
   window.addEventListener('scroll', () => {
@@ -294,10 +343,47 @@ document.addEventListener('DOMContentLoaded', () => {
     else if (timeOverlay?.classList.contains('is-open')) closeTimePicker();
   });
 
-  /* ── 7. MÁSCARA TELEFONE ───────────────────────────────── */
-  const phoneInput = $('#phone');
-  phoneInput?.addEventListener('input', () => {
-    phoneInput.value = Validations.maskPhone(phoneInput.value);
+  /* ── 7. MÁSCARA TELEFONE + PAÍS ─────────────────────────── */
+  const phoneInput   = $('#phone');
+  const phoneCountry = $('#phoneCountry');
+
+  // Popula seletor de país com a lista definida acima
+  if (phoneCountry && PHONE_COUNTRIES.length) {
+    phoneCountry.innerHTML = '';
+    PHONE_COUNTRIES.forEach(country => {
+      const opt = document.createElement('option');
+      opt.value = country.code;
+      const flag = codeToFlag(country.code);
+      opt.textContent = `${flag ? flag + ' ' : ''}${country.dial} — ${country.name}`;
+      opt.dataset.code = country.dial;
+      if (country.code === 'BR') opt.selected = true;
+      phoneCountry.appendChild(opt);
+    });
+  }
+
+  function _applyPhoneMask() {
+    if (!phoneInput) return;
+    const country = phoneCountry?.value || 'BR';
+    if (country === 'BR') {
+      phoneInput.value = Validations.maskPhone(phoneInput.value);
+    } else {
+      // Para outros países, aceita apenas dígitos e +, sem máscara fixa
+      const raw = phoneInput.value.replace(/[^+\d]/g, '');
+      phoneInput.value = raw.slice(0, 20);
+    }
+  }
+
+  phoneInput?.addEventListener('input', _applyPhoneMask);
+  phoneCountry?.addEventListener('change', () => {
+    // Atualiza placeholder conforme país selecionado
+    if (!phoneInput) return;
+    const selected = PHONE_COUNTRIES.find(c => c.code === phoneCountry.value) || PHONE_COUNTRIES[0];
+    if (selected.code === 'BR') {
+      phoneInput.placeholder = '(19) 99999-9999';
+    } else {
+      phoneInput.placeholder = `${selected.dial} número do WhatsApp`;
+    }
+    phoneInput.value = '';
   });
 
   /* ── 8. STEPPER DE PASSAGEIROS ─────────────────────────── */

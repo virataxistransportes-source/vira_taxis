@@ -123,8 +123,16 @@
             <label class="form-label" for="phone">
               <i class="fa-solid fa-phone"></i> Telefone / WhatsApp
             </label>
-            <input type="tel" id="phone" name="phone" class="form-input"
-              placeholder="(19) 99999-9999" autocomplete="tel" maxlength="16" required aria-required="true" />
+            <div class="phone-field">
+              <select id="phoneCountry" name="phoneCountry" class="form-input phone-country__select" aria-label="País do telefone">
+                <option value="BR" data-code="+55" selected>🇧🇷 +55</option>
+                <option value="US" data-code="+1">🇺🇸 +1</option>
+                <option value="PT" data-code="+351">🇵🇹 +351</option>
+                <option value="AR" data-code="+54">🇦🇷 +54</option>
+              </select>
+              <input type="tel" id="phone" name="phone" class="form-input phone-input"
+                placeholder="(19) 99999-9999" autocomplete="tel" maxlength="20" required aria-required="true" />
+            </div>
             <span class="field-msg" id="err-phone" role="alert"></span>
           </div>
         </div>
@@ -954,7 +962,7 @@
 <script src="scripts/ui.js"></script>
   <!-- Chave injetada no build a partir de AIzaSyB2B8iM2A5zrmjw_EGNMfOaOQ3jmgyiSq0 (Vercel / .env). -->
   <script 
-  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB2B8iM2A5zrmjw_EGNMfOaOQ3jmgyiSq0&libraries=places&callback=initGoogleMaps" 
+  src="https://maps.googleapis.com/maps/api/js?key=__GOOGLE_MAPS_KEY__&libraries=places&callback=initGoogleMaps" 
   async defer>
 </script>
 </body>

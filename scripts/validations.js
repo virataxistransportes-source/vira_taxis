@@ -64,19 +64,14 @@ const Validations = (() => {
     },
     phone: {
       test: v => {
-        const d = String(v).replace(/\D/g, '');
-        let digits = d;
-        if (digits.startsWith('55') && (digits.length === 12 || digits.length === 13)) {
-          digits = digits.slice(2);
-        }
-        if (digits.length !== 10 && digits.length !== 11) return false;
-        const ddd = parseInt(digits.slice(0, 2), 10);
-        if (ddd < 11 || ddd > 99) return false;
-        if (digits.length === 11 && digits[2] !== '9') return false;
+        const s = _normalize(v);
+        if (!s) return false;
+        const digits = s.replace(/\D/g, '');
+        if (digits.length < 7 || digits.length > 16) return false;
         if (/^(\d)\1+$/.test(digits)) return false;
         return true;
       },
-      message: 'Telefone com DDD é obrigatório. Ex: (19) 99999-9999.',
+      message: 'Telefone é obrigatório. Informe um número válido com DDD/DDD internacional.',
     },
     origin: {
       test: v => {
