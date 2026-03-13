@@ -299,10 +299,10 @@
   gap: .5rem;
 }
 .footer__bottom-inner p { font-size: .76rem; color: rgba(255,255,255,.25); font-weight: 300; }
-.footer__bottom-links { display: flex; align-items: center; gap: .6rem; }
-.footer__bottom-links a { font-size: .76rem; color: rgba(255,255,255,.25); transition: color var(--t-fast); }
+.footer__bottom-links { display: flex; align-items: center; gap: .6rem; font-size: .76rem; color: rgba(255,255,255,.25); font-weight: 300; }
+.footer__bottom-links a { color: inherit; transition: color var(--t-fast); }
 .footer__bottom-links a:hover { color: var(--sky); }
-.footer__bottom-links span { color: rgba(255,255,255,.12); }
+.footer__bottom-links span { color: inherit; }
 
 /* ── WhatsApp Float ──────────────────────────────────────── */
 .wa-float {
