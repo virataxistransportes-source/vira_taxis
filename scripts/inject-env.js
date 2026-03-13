@@ -13,9 +13,13 @@
 const fs = require('fs');
 const path = require('path');
 
-// Carrega .env em desenvolvimento local (opcional)
+// Carrega .env em desenvolvimento local (raiz do projeto ou diretório atual)
 try {
-  require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
+  const dotenv = require('dotenv');
+  const rootEnv = path.join(__dirname, '..', '.env');
+  const cwdEnv = path.join(process.cwd(), '.env');
+  dotenv.config({ path: rootEnv });
+  dotenv.config({ path: cwdEnv }); // fallback quando npm run build roda de outro dir
 } catch {
   // dotenv não instalado — usa só process.env (ex.: Vercel)
 }
@@ -31,6 +35,7 @@ if (!key) {
     console.error('  Adicione GOOGLE_MAPS_KEY para Production (e Preview se quiser).');
   } else {
     console.error('  Local: crie um arquivo .env na raiz com GOOGLE_MAPS_KEY=sua_chave');
+    console.error('  Se o .env já existe, rode: npm install');
   }
   console.error('');
   process.exit(1);

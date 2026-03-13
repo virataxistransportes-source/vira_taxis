@@ -1,7 +1,19 @@
+# Variáveis de ambiente (chave Maps, etc.)
 .env
 .env.local
 .env.production
-*.env
-config.js
-.vercel
 .env*.local
+*.env
+
+# Vercel
+.vercel
+
+# Node / npm (build)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.npm
+
+# Outros
+config.js
