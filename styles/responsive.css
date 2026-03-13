@@ -8,8 +8,8 @@
   .historia__inner       { grid-template-columns: 1fr; }
   .historia__media       { flex-direction: row; flex-wrap: wrap; justify-content: center; }
   .diferenciais__grid    { grid-template-columns: repeat(2, 1fr); }
-  .agendamento__inner    { grid-template-columns: 1fr; }
-  .agendamento__info     { display: none; }
+  .agendamento__inner    { grid-template-columns: 1fr; gap: 2.5rem; }
+  .agendamento__info     { text-align: center; max-width: 540px; margin-inline: auto; }
   .footer__grid          { grid-template-columns: 1fr 1fr; gap: 2rem; }
   .stats-bar__inner      { grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
   .faq__inner            { grid-template-columns: 1fr; }
@@ -50,7 +50,7 @@
   .servicos__grid     { grid-template-columns: 1fr; }
   .diferenciais__grid { grid-template-columns: 1fr; }
   .form-row           { grid-template-columns: 1fr; }
-  .form-card form     { padding: 1.1rem; }
+  .form-card form     { padding: 1.15rem 1.1rem 1.25rem; }
   .form-route-section {
     margin-left: -1.1rem;
     margin-right: -1.1rem;
