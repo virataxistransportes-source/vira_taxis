@@ -8,8 +8,8 @@
   .historia__inner       { grid-template-columns: 1fr; }
   .historia__media       { flex-direction: row; flex-wrap: wrap; justify-content: center; }
   .diferenciais__grid    { grid-template-columns: repeat(2, 1fr); }
-  .agendamento__inner    { grid-template-columns: 1fr; gap: 2.5rem; }
-  .agendamento__info     { text-align: center; max-width: 540px; margin-inline: auto; }
+  .agendamento__inner    { grid-template-columns: 1fr; gap: 2.5rem; min-width: 0; }
+  .agendamento__info     { text-align: center; max-width: 540px; margin-inline: auto; min-width: 0; overflow-wrap: break-word; }
   .footer__grid          { grid-template-columns: 1fr 1fr; gap: 2rem; }
   .stats-bar__inner      { grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
   .faq__inner            { grid-template-columns: 1fr; }
@@ -34,15 +34,6 @@
   .depoimentos__track { gap: 1rem; }
 
   .trust-sep { display: none; }
-
-  /* Evita zoom ao focar em inputs no iOS (font-size >= 16px) e arraste horizontal */
-  .form-input,
-  .form-input::placeholder {
-    font-size: 16px !important;
-  }
-  .input-with-icon--route .form-input--route {
-    font-size: 16px !important;
-  }
 }
 
 /* ── Mobile (≤ 600px) ────────────────────────────────────── */
@@ -52,11 +43,29 @@
   .form-row           { grid-template-columns: 1fr; }
   .form-card form     { padding: 1.15rem 1.1rem 1.25rem; }
   .form-route-section {
-    margin-left: -1.1rem;
-    margin-right: -1.1rem;
-    padding-left: 1.1rem;
-    padding-right: 1.1rem;
-    width: calc(100% + 2.2rem);
+    margin-left: 0;
+    margin-right: 0;
+    padding-left: 0;
+    padding-right: 0;
+    width: 100%;
+  }
+  /* Inputs do card com leve respiro lateral para bordas ficarem visíveis */
+  .form-card .form-input {
+    width: 100%;
+    box-sizing: border-box;
+    margin-inline: .15rem;
+  }
+  /* Cotação: evita corte de texto e alinha ao container (como história) */
+  .agendamento         { overflow: visible; }
+  .form-card           { min-width: 0; }
+  .phone-field         { min-width: 0; }
+  .phone-input         { min-width: 0; }
+  .agendamento__desc,
+  .agendamento__checklist li { overflow-wrap: break-word; word-wrap: break-word; }
+  /* Evita zoom no iOS ao focar origem/destino (font-size >= 16px) */
+  .input-with-icon--route .form-input--route,
+  .input-with-icon--route .form-input--route::placeholder {
+    font-size: 16px !important;
   }
   .footer__grid       { grid-template-columns: 1fr; }
   .footer__bottom-inner { flex-direction: column; text-align: center; }
