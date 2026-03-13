@@ -50,7 +50,12 @@
 }
 .agendamento__checklist li i { color: var(--green); font-size: .78rem; flex-shrink: 0; }
 
-.agendamento__contact { display: flex; flex-direction: column; gap: .6rem; }
+.agendamento__contact {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: .6rem;
+}
 .contact-pill {
   display: inline-flex;
   align-items: center;
