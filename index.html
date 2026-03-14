@@ -197,10 +197,13 @@
               <label class="form-label" for="originPredefined">
                 <i class="fa-solid fa-circle-dot"></i> Endereço de origem
               </label>
-              <select id="originPredefined" class="form-input form-input--route form-select-route" aria-label="Escolha o endereço de origem">
-                <option value="">Selecione a origem</option>
-                <!-- Opções preenchidas por JS a partir de PREDEFINED_ADDRESSES -->
-              </select>
+              <div class="input-with-icon input-with-icon--route">
+                <select id="originPredefined" class="form-input form-input--route form-select-route" aria-label="Escolha o endereço de origem">
+                  <option value="">Selecione a origem</option>
+                  <!-- Opções preenchidas por JS a partir de PREDEFINED_ADDRESSES -->
+                </select>
+                <span class="input-icon"><i class="fa-solid fa-location-crosshairs"></i></span>
+              </div>
               <span class="field-msg" id="err-origin-predefined" role="alert"></span>
             </div>
             <div class="form-group form-group--route origin-free" id="originFreeWrap" aria-hidden="true" style="display: none;">
@@ -242,10 +245,13 @@
               <label class="form-label" for="destinationPredefined">
                 <i class="fa-solid fa-location-dot"></i> Endereço de destino
               </label>
-              <select id="destinationPredefined" class="form-input form-input--route form-select-route" aria-label="Escolha o endereço de destino">
-                <option value="">Selecione o destino</option>
-                <!-- Opções preenchidas por JS -->
-              </select>
+              <div class="input-with-icon input-with-icon--route">
+                <select id="destinationPredefined" class="form-input form-input--route form-select-route" aria-label="Escolha o endereço de destino">
+                  <option value="">Selecione o destino</option>
+                  <!-- Opções preenchidas por JS -->
+                </select>
+                <span class="input-icon"><i class="fa-solid fa-map-location-dot"></i></span>
+              </div>
               <span class="field-msg" id="err-destination-predefined" role="alert"></span>
             </div>
           </div>
