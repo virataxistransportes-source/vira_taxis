@@ -58,7 +58,22 @@ document.addEventListener('DOMContentLoaded', () => {
     { code: 'TR', dial: '+90',  name: 'Turquia' },
     { code: 'RU', dial: '+7',   name: 'Rússia' },
     { code: 'IN', dial: '+91',  name: 'Índia' }
-    // Lista reduzida para manter performance e foco em países mais comuns.
+  ];
+
+  /* ── Endereços pré-definidos (origem/destino) — coordenadas para API Distance Matrix ── */
+  const PREDEFINED_ADDRESSES = [
+    { label: 'Aeroporto de Viracopos VCP',           lat: -23.0045,  lng: -47.1340 },
+    { label: 'Aeroporto Campos dos Amarais SDAM',    lat: -22.9553,  lng: -47.1386 },
+    { label: 'Aeroporto de Guarulhos GRU',           lat: -23.4356,  lng: -46.4731 },
+    { label: 'Aeroporto de Congonhas CGN',           lat: -23.6261,  lng: -46.6553 },
+    { label: 'Royal Palm Plaza Resort Campinas',     lat: -22.9092,  lng: -47.0622 },
+    { label: 'Royal Palm Tower Anhanguera',          lat: -22.9080,  lng: -47.0580 },
+    { label: 'Hotel Contemporâneo Campinas',                  lat: -22.9036,  lng: -47.0602 },
+    { label: 'Hotel Vitória Concept Campinas',       lat: -22.9070,  lng: -47.0630 },
+    { label: 'Hotel Tauá Resort Atibaia',             lat: -23.1174,  lng: -46.5562 },
+    { label: 'Hotel Bourbon Resort Atibaia',         lat: -23.1150,  lng: -46.5580 },
+    { label: 'Rio Hotel By Bourbon Campinas',        lat: -22.9040,  lng: -47.0610 },
+    { label: 'Hotel Meliá Campinas',                 lat: -22.9020,  lng: -47.0590 },
   ];
 
   function codeToFlag(code) {
@@ -507,13 +522,111 @@ document.addEventListener('DOMContentLoaded', () => {
   _setupClearableInput(originInput, clearOriginBtn, 'origin');
   _setupClearableInput(destinationInput, clearDestinationBtn, 'destination');
 
+  /* ── 9.1 MODO ROTA: Sair de / Ir para + endereços pré-definidos ───────── */
+  const originFixedWrap   = $('#originFixedWrap');
+  const originFreeWrap    = $('#originFreeWrap');
+  const destFixedWrap     = $('#destFixedWrap');
+  const destFreeWrap      = $('#destFreeWrap');
+  const originPredefined  = $('#originPredefined');
+  const destinationPredefined = $('#destinationPredefined');
+  const routeModeBtns     = $$('.route-mode-btn');
+
+  function getRouteMode() {
+    const active = $('.route-mode-btn.is-active');
+    return active?.dataset?.routeMode === 'ir_para' ? 'ir_para' : 'sair_de';
+  }
+
+  function populatePredefinedSelect(selectEl) {
+    if (!selectEl) return;
+    selectEl.innerHTML = '';
+    const opt0 = document.createElement('option');
+    opt0.value = '';
+    opt0.textContent = selectEl.id === 'originPredefined' ? 'Selecione a origem' : 'Selecione o destino';
+    selectEl.appendChild(opt0);
+    PREDEFINED_ADDRESSES.forEach((addr, i) => {
+      const opt = document.createElement('option');
+      opt.value = String(i);
+      opt.textContent = addr.label;
+      selectEl.appendChild(opt);
+    });
+  }
+  populatePredefinedSelect(originPredefined);
+  populatePredefinedSelect(destinationPredefined);
+
+  function applyRouteMode(mode) {
+    const isSairDe = mode === 'sair_de';
+    if (originFixedWrap) { originFixedWrap.style.display = isSairDe ? '' : 'none'; originFixedWrap.setAttribute('aria-hidden', !isSairDe); }
+    if (originFreeWrap)  { originFreeWrap.style.display = isSairDe ? 'none' : ''; originFreeWrap.setAttribute('aria-hidden', isSairDe); }
+    if (destFreeWrap)    { destFreeWrap.style.display = isSairDe ? '' : 'none'; destFreeWrap.setAttribute('aria-hidden', !isSairDe); }
+    if (destFixedWrap)   { destFixedWrap.style.display = isSairDe ? 'none' : ''; destFixedWrap.setAttribute('aria-hidden', isSairDe); }
+    routeModeBtns.forEach(btn => {
+      const pressed = btn.dataset.routeMode === mode;
+      btn.classList.toggle('is-active', pressed);
+      btn.setAttribute('aria-pressed', pressed);
+    });
+    if (originPredefined) originPredefined.value = '';
+    if (destinationPredefined) destinationPredefined.value = '';
+    if (originInput) originInput.value = '';
+    if (destinationInput) destinationInput.value = '';
+    if (typeof MapsService !== 'undefined') MapsService.reset();
+    _clearFieldError('origin');
+    _clearFieldError('destination');
+    _clearFieldError('origin-predefined');
+    _clearFieldError('destination-predefined');
+    if (quoteResult) quoteResult.classList.remove('show');
+  }
+
+  routeModeBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const mode = btn.dataset.routeMode;
+      if (mode) applyRouteMode(mode);
+    });
+  });
+
+  originPredefined?.addEventListener('change', () => {
+    _clearFieldError('origin-predefined');
+    const idx = originPredefined.value;
+    if (idx === '') {
+      if (originInput) originInput.value = '';
+      if (typeof MapsService !== 'undefined') MapsService.reset();
+    } else {
+      const addr = PREDEFINED_ADDRESSES[parseInt(idx, 10)];
+      if (addr && originInput) {
+        originInput.value = addr.label;
+        originInput.dispatchEvent(new Event('input', { bubbles: true }));
+        originInput.dispatchEvent(new Event('change', { bubbles: true }));
+      }
+      if (addr && typeof MapsService !== 'undefined') MapsService.setOriginFromCoords(addr);
+    }
+    if (quoteResult) quoteResult.classList.remove('show');
+  });
+
+  destinationPredefined?.addEventListener('change', () => {
+    _clearFieldError('destination-predefined');
+    const idx = destinationPredefined.value;
+    if (idx === '') {
+      if (destinationInput) destinationInput.value = '';
+      if (typeof MapsService !== 'undefined') MapsService.reset();
+    } else {
+      const addr = PREDEFINED_ADDRESSES[parseInt(idx, 10)];
+      if (addr && destinationInput) {
+        destinationInput.value = addr.label;
+        destinationInput.dispatchEvent(new Event('input', { bubbles: true }));
+        destinationInput.dispatchEvent(new Event('change', { bubbles: true }));
+      }
+      if (addr && typeof MapsService !== 'undefined') MapsService.setDestinationFromCoords(addr);
+    }
+    if (quoteResult) quoteResult.classList.remove('show');
+  });
+
   /* ── 11. VALIDAÇÃO INLINE ──────────────────────────────── */
   function setFieldError(id, msg) {
-    // Valida que o id é um campo conhecido (evita manipulação do DOM arbitrária)
-    const knownFields = ['name','phone','origin','destination','date','time','passengers','luggage'];
+    const knownFields = ['name','phone','origin','destination','date','time','passengers','luggage','origin-predefined','destination-predefined'];
     if (!knownFields.includes(id)) return;
 
-    const input = $('#' + id) || $(`[id="${id}"]`);
+    let input = $('#' + id) || $(`[id="${id}"]`);
+    if (id === 'origin-predefined') input = $('#originPredefined');
+    if (id === 'destination-predefined') input = $('#destinationPredefined');
     const errEl = $('#err-' + id);
     if (!input) return;
     if (msg) {
@@ -528,7 +641,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function _clearFieldError(id) {
-    const knownFields = ['name','phone','origin','destination','date','time','passengers','luggage'];
+    const knownFields = ['name','phone','origin','destination','date','time','passengers','luggage','origin-predefined','destination-predefined'];
     if (!knownFields.includes(id)) return;
     const input = $('#' + id);
     const errEl = $('#err-' + id);
@@ -593,11 +706,37 @@ document.addEventListener('DOMContentLoaded', () => {
 
       clearErrors();
 
+      const mode = getRouteMode();
+      const isSairDe = mode === 'sair_de';
+      let originVal = ($('#origin')?.value ?? '').trim();
+      let destVal   = ($('#destination')?.value ?? '').trim();
+      if (isSairDe && originPredefined?.value !== '') {
+        const idx = parseInt(originPredefined.value, 10);
+        if (Number.isFinite(idx) && PREDEFINED_ADDRESSES[idx]) originVal = PREDEFINED_ADDRESSES[idx].label;
+      }
+      if (!isSairDe && destinationPredefined?.value !== '') {
+        const idx = parseInt(destinationPredefined.value, 10);
+        if (Number.isFinite(idx) && PREDEFINED_ADDRESSES[idx]) destVal = PREDEFINED_ADDRESSES[idx].label;
+      }
+
+      if (isSairDe && !originPredefined?.value) {
+        setFieldError('origin-predefined', 'Selecione o endereço de origem.');
+        quoteResult?.classList.remove('show');
+        $('#originPredefined')?.focus();
+        return;
+      }
+      if (!isSairDe && !destinationPredefined?.value) {
+        setFieldError('destination-predefined', 'Selecione o endereço de destino.');
+        quoteResult?.classList.remove('show');
+        $('#destinationPredefined')?.focus();
+        return;
+      }
+
       const raw = {
         name:        ($('#name')?.value ?? '').trim(),
         phone:       $('#phone')?.value ?? '',
-        origin:      ($('#origin')?.value ?? '').trim(),
-        destination: ($('#destination')?.value ?? '').trim(),
+        origin:      originVal,
+        destination: destVal,
         date:        $('#date')?.value ?? '',
         time:        $('#time')?.value ?? '',
         passengers:  String(passengers),
@@ -607,10 +746,12 @@ document.addEventListener('DOMContentLoaded', () => {
       const { valid, errors } = Validations.validateForm(raw);
       const placeErrors = {};
       if (MapsService.isActive()) {
-        if (raw.origin.length >= 5 && !MapsService.getOriginPlace()) {
+        const originFromPredefined = isSairDe && originPredefined?.value !== '';
+        const destFromPredefined = !isSairDe && destinationPredefined?.value !== '';
+        if (raw.origin.length >= 5 && !MapsService.getOriginPlace() && !originFromPredefined) {
           placeErrors.origin = 'Selecione o endereço de origem na lista de sugestões ao digitar.';
         }
-        if (raw.destination.length >= 5 && !MapsService.getDestinationPlace()) {
+        if (raw.destination.length >= 5 && !MapsService.getDestinationPlace() && !destFromPredefined) {
           placeErrors.destination = 'Selecione o endereço de destino na lista de sugestões ao digitar.';
         }
       }
@@ -620,7 +761,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const firstErrorMsg = form?.querySelector('.field-msg.show');
         if (firstErrorMsg) firstErrorMsg.scrollIntoView({ behavior: 'smooth', block: 'center' });
         const firstInvalid = Object.keys(allErrors)[0];
-        const focusIds = { name: 'name', phone: 'phone', origin: 'origin', destination: 'destination', date: 'dateTrigger', time: 'timeTrigger', passengers: 'btnMinus', luggage: 'btnLuggageMinus' };
+        const focusIds = { name: 'name', phone: 'phone', origin: 'origin', destination: 'destination', 'origin-predefined': 'originPredefined', 'destination-predefined': 'destinationPredefined', date: 'dateTrigger', time: 'timeTrigger', passengers: 'btnMinus', luggage: 'btnLuggageMinus' };
         const toFocus = focusIds[firstInvalid] ? $(`#${focusIds[firstInvalid]}`) : null;
         if (toFocus) toFocus.focus({ preventScroll: true });
         return;

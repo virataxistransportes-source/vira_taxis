@@ -179,9 +179,31 @@
 
         <!-- Rota -->
         <p class="form-section-label">Rota da viagem</p>
+        <div class="route-mode-wrap">
+          <div class="route-mode-toggle" role="group" aria-label="Tipo de endereço">
+            <button type="button" class="route-mode-btn is-active" data-route-mode="sair_de" aria-pressed="true">
+              <i class="fa-solid fa-location-arrow"></i> Sair de
+            </button>
+            <button type="button" class="route-mode-btn" data-route-mode="ir_para" aria-pressed="false">
+              <i class="fa-solid fa-map-marker-alt"></i> Ir para
+            </button>
+          </div>
+          <p class="route-mode-msg">Selecione a partir dos endereços que atendemos.</p>
+        </div>
         <div class="form-route-section">
-          <div class="form-row form-row--single">
-            <div class="form-group form-group--route">
+          <!-- Origem: select pré-definido (modo Sair de) ou input livre (modo Ir para) -->
+          <div class="form-row form-row--single route-origin-row">
+            <div class="form-group form-group--route origin-fixed" id="originFixedWrap" aria-hidden="false">
+              <label class="form-label" for="originPredefined">
+                <i class="fa-solid fa-circle-dot"></i> Endereço de origem
+              </label>
+              <select id="originPredefined" class="form-input form-input--route form-select-route" aria-label="Escolha o endereço de origem">
+                <option value="">Selecione a origem</option>
+                <!-- Opções preenchidas por JS a partir de PREDEFINED_ADDRESSES -->
+              </select>
+              <span class="field-msg" id="err-origin-predefined" role="alert"></span>
+            </div>
+            <div class="form-group form-group--route origin-free" id="originFreeWrap" aria-hidden="true" style="display: none;">
               <label class="form-label" for="origin">
                 <i class="fa-solid fa-circle-dot"></i> Endereço de origem
               </label>
@@ -198,8 +220,9 @@
               <span class="field-msg" id="err-origin" role="alert"></span>
             </div>
           </div>
-          <div class="form-row form-row--single">
-            <div class="form-group form-group--route">
+          <!-- Destino: input livre (modo Sair de) ou select pré-definido (modo Ir para) -->
+          <div class="form-row form-row--single route-dest-row">
+            <div class="form-group form-group--route dest-free" id="destFreeWrap" aria-hidden="false">
               <label class="form-label" for="destination">
                 <i class="fa-solid fa-location-dot"></i> Endereço de destino
               </label>
@@ -214,6 +237,16 @@
                 <span class="input-icon"><i class="fa-solid fa-map-location-dot"></i></span>
               </div>
               <span class="field-msg" id="err-destination" role="alert"></span>
+            </div>
+            <div class="form-group form-group--route dest-fixed" id="destFixedWrap" aria-hidden="true" style="display: none;">
+              <label class="form-label" for="destinationPredefined">
+                <i class="fa-solid fa-location-dot"></i> Endereço de destino
+              </label>
+              <select id="destinationPredefined" class="form-input form-input--route form-select-route" aria-label="Escolha o endereço de destino">
+                <option value="">Selecione o destino</option>
+                <!-- Opções preenchidas por JS -->
+              </select>
+              <span class="field-msg" id="err-destination-predefined" role="alert"></span>
             </div>
           </div>
         </div>
@@ -905,7 +938,7 @@
 <script src="scripts/ui.js"></script>
   <!-- Chave injetada no build a partir de AIzaSyB2B8iM2A5zrmjw_EGNMfOaOQ3jmgyiSq0 (Vercel / .env). -->
   <script 
-  src="https://maps.googleapis.com/maps/api/js?key=__GOOGLE_MAPS_KEY__&libraries=places&callback=initGoogleMaps" 
+  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB2B8iM2A5zrmjw_EGNMfOaOQ3jmgyiSq0&libraries=places&callback=initGoogleMaps" 
   async defer>
 </script>
 </body>

@@ -140,11 +140,37 @@ const MapsService = (() => {
     _onGoogleReady();
   }
 
+  function setOriginFromCoords(placeObj) {
+    if (!_active || !placeObj || typeof placeObj.lat !== 'number' || typeof placeObj.lng !== 'number') return;
+    const lat = placeObj.lat;
+    const lng = placeObj.lng;
+    const label = (placeObj.label || '').trim() || `${lat}, ${lng}`;
+    _origin = {
+      geometry: { location: new google.maps.LatLng(lat, lng) },
+      formatted_address: label,
+      name: label,
+    };
+    _tryDist();
+  }
+
+  function setDestinationFromCoords(placeObj) {
+    if (!_active || !placeObj || typeof placeObj.lat !== 'number' || typeof placeObj.lng !== 'number') return;
+    const lat = placeObj.lat;
+    const lng = placeObj.lng;
+    const label = (placeObj.label || '').trim() || `${lat}, ${lng}`;
+    _dest = {
+      geometry: { location: new google.maps.LatLng(lat, lng) },
+      formatted_address: label,
+      name: label,
+    };
+    _tryDist();
+  }
+
   function isActive()           { return _active; }
   function getDistanceKm()      { return _km; }
   function getOriginPlace()     { return _origin; }
   function getDestinationPlace() { return _dest; }
   function reset()              { _origin = null; _dest = null; _km = null; }
 
-  return { isActive, getDistanceKm, getOriginPlace, getDestinationPlace, reset };
+  return { isActive, getDistanceKm, getOriginPlace, getDestinationPlace, setOriginFromCoords, setDestinationFromCoords, reset };
 })();

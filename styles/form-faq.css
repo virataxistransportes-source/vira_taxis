@@ -242,6 +242,73 @@
   pointer-events: none;
 }
 
+/* Modo rota: Sair de / Ir para + mensagem */
+.route-mode-wrap {
+  margin-bottom: 1rem;
+}
+.route-mode-toggle {
+  display: flex;
+  gap: .5rem;
+  margin-bottom: .5rem;
+}
+.route-mode-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  padding: .5rem 1rem;
+  font-size: .88rem;
+  font-weight: 600;
+  color: var(--ink-60);
+  background: var(--surface);
+  border: 1.5px solid var(--line);
+  border-radius: var(--r-md);
+  cursor: pointer;
+  transition: background var(--t-fast), border-color var(--t-fast), color var(--t-fast);
+}
+.route-mode-btn:hover {
+  color: var(--ink);
+  border-color: var(--sky-mid);
+  background: var(--sky-10);
+}
+.route-mode-btn.is-active {
+  color: var(--sky-deep);
+  border-color: var(--sky-mid);
+  background: var(--sky-10);
+}
+.route-mode-msg {
+  font-size: .8rem;
+  color: var(--ink-50);
+  margin: 0;
+  line-height: 1.4;
+}
+.form-select-route {
+  width: 100%;
+  min-width: 0;
+  min-height: 52px;
+  padding: .85rem 1rem;
+  font-size: .95rem;
+  line-height: 1.4;
+  border: 1.5px solid var(--line);
+  border-radius: var(--r-md);
+  background: var(--white);
+  color: var(--ink);
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%236b7280' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10l-5 5z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right .85rem center;
+  padding-right: 2.25rem;
+}
+.form-select-route:focus {
+  outline: none;
+  border-color: var(--sky-mid);
+  box-shadow: 0 0 0 3px rgba(152,197,254,.2);
+}
+.form-select-route.field-error {
+  border-color: #e53e3e;
+}
+
 /* Origem e destino — no desktop a seção estende até as bordas do card (sem max-width para não limitar) */
 .form-route-section {
   margin-left: -1.6rem;
