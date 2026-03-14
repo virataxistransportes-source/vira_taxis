@@ -121,6 +121,10 @@
 .agendamento__trust {
   margin-top: 1.25rem;
 }
+/* Botão Nossa história (igual ao da seção hero) */
+.agendamento__actions {
+  margin-top: 1.5rem;
+}
 
 /* Card do formulário */
 .form-card {
