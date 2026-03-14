@@ -32,6 +32,7 @@
 
 /* Card flutuante com slogan (mesma tipografia do hero) */
 .agendamento__slogan-float {
+  position: relative;
   background: var(--white);
   border-radius: var(--r-xl);
   box-shadow: var(--sh-xl);
@@ -40,6 +41,9 @@
   margin-bottom: 2rem;
   animation: floatCard 4.5s ease-in-out infinite;
 }
+/* Badges flutuantes (mesma posição do hero: topo dir. e base esq.) */
+.agendamento__slogan-float .float-badge--1 { top: 4%; right: -16px; }
+.agendamento__slogan-float .float-badge--2 { bottom: 6%; left: -16px; }
 .agendamento__tag {
   margin-bottom: .9rem;
   font-size: .7rem;
