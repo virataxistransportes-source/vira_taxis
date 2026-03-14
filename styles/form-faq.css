@@ -338,15 +338,26 @@
   font-size: .82rem;
   color: var(--sky-deep);
   cursor: pointer;
-  text-decoration: underline;
-  text-underline-offset: 2px;
   transition: color var(--t-fast);
 }
 .route-custom-link .link-button:hover { color: var(--ink); }
 
-/* Modal cotação rota fora do padrão */
-.custom-quote-modal { max-width: 480px; }
-.custom-quote-modal .picker-modal__header { position: relative; padding-right: 2.5rem; }
+/* Modal cotação rota fora do padrão — desktop: mais largo; mobile: campos em coluna */
+/* Sobrescreve .picker-modal { max-width: 340px } para o modal de cotação ficar largo no desktop */
+.picker-overlay .picker-modal.custom-quote-modal {
+  width: 100%;
+  max-width: min(720px, calc(100vw - 2rem));
+  max-height: calc(100vh - 2rem);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+@media (min-width: 768px) {
+  .picker-overlay .picker-modal.custom-quote-modal {
+    max-width: min(760px, calc(100vw - 2rem));
+  }
+}
+.custom-quote-modal .picker-modal__header { position: relative; padding-right: 2.5rem; flex-shrink: 0; }
 .custom-quote-close {
   position: absolute;
   right: 1rem;
@@ -365,7 +376,13 @@
   transition: background var(--t-fast);
 }
 .custom-quote-close:hover { background: rgba(255,255,255,.25); }
-.custom-quote-body { padding: 1.25rem 1.5rem; }
+.custom-quote-body {
+  padding: 1.25rem 1.5rem;
+  overflow-y: auto;
+  overflow-x: hidden;
+  flex: 1;
+  min-height: 0;
+}
 .custom-quote-desc {
   font-size: .88rem;
   color: var(--ink-60);
@@ -374,7 +391,36 @@
 }
 .custom-quote-body .form-section-label { margin-top: .5rem; }
 .custom-quote-body .form-section-label:first-of-type { margin-top: 0; }
-.custom-quote-body .picker-modal__footer { border-top: 1px solid var(--line); margin-top: 1rem; padding-top: 1rem; }
+.custom-quote-body .picker-modal__footer { border-top: 1px solid var(--line); margin-top: 1rem; padding-top: 1rem; flex-shrink: 0; }
+.custom-quote-body .phone-field { min-width: 0; }
+.custom-quote-body .phone-input { min-width: 0; flex: 1; }
+.custom-quote-body .phone-country__select { min-width: 120px; }
+.custom-quote-body .field-msg { word-break: break-word; }
+
+/* Mobile: campos em linhas separadas para não precisar arrastar */
+@media (max-width: 540px) {
+  .custom-quote-body .form-row {
+    grid-template-columns: 1fr;
+  }
+  .custom-quote-body .phone-field {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .custom-quote-body .phone-country-trigger {
+    max-width: none;
+  }
+  .custom-quote-body .phone-input {
+    width: 100%;
+  }
+  .custom-quote-body .picker-modal__footer {
+    flex-wrap: wrap;
+    gap: .5rem;
+  }
+  .custom-quote-body .picker-modal__footer .btn {
+    flex: 1;
+    min-width: 0;
+  }
+}
 
 /* Origem e destino — no desktop a seção estende até as bordas do card (sem max-width para não limitar) */
 .form-route-section {

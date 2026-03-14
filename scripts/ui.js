@@ -199,9 +199,20 @@ document.addEventListener('DOMContentLoaded', () => {
   let selectedDate = null;
   let tHour = 8, tMin = 0;
 
-  function openDatePicker() {
+  let _datePickerTarget = null;
+  function getDatePickerTarget() {
+    return _datePickerTarget || { displayEl: dateDisplay, hiddenEl: dateHidden, triggerEl: dateTrigger };
+  }
+  function openDatePicker(target) {
+    _datePickerTarget = target || null;
     const now = new Date();
     if (!selectedDate) calView = new Date(now.getFullYear(), now.getMonth(), 1);
+    const dest = getDatePickerTarget();
+    if (dest.hiddenEl?.value && /^\d{4}-\d{2}-\d{2}$/.test(dest.hiddenEl.value)) {
+      const [y, m, d] = dest.hiddenEl.value.split('-').map(Number);
+      calView = new Date(y, m - 1, 1);
+      selectedDate = new Date(y, m - 1, d);
+    }
     renderCalendar();
     dateOverlay?.classList.add('is-open');
     dateOverlay?.setAttribute('aria-hidden', 'false');
@@ -243,9 +254,10 @@ document.addEventListener('DOMContentLoaded', () => {
       btn.addEventListener('click', () => {
         selectedDate = thisDate;
         const iso = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-        if (dateHidden) dateHidden.value = iso;
-        if (dateDisplay) dateDisplay.textContent = `${String(d).padStart(2,'0')}/${String(month+1).padStart(2,'0')}/${year}`;
-        dateTrigger?.classList.add('has-value');
+        const dest = getDatePickerTarget();
+        if (dest.hiddenEl) dest.hiddenEl.value = iso;
+        if (dest.displayEl) dest.displayEl.textContent = `${String(d).padStart(2,'0')}/${String(month+1).padStart(2,'0')}/${year}`;
+        if (dest.triggerEl) dest.triggerEl.classList.add('has-value');
         closeDatePicker();
         quoteResult?.classList.remove('show');
         _clearFieldError('date');
@@ -281,9 +293,15 @@ document.addEventListener('DOMContentLoaded', () => {
     tMin = m;
   }
 
-  function openTimePicker() {
+  let _timePickerTarget = null;
+  function getTimePickerDateEl() {
+    return _timePickerTarget?.dateHiddenEl ?? dateHidden;
+  }
+  function openTimePicker(target) {
+    _timePickerTarget = target || null;
     if (timePickerErr) { timePickerErr.textContent = ''; timePickerErr.classList.remove('show'); }
-    const isoDate = dateHidden?.value ?? '';
+    const dateEl = getTimePickerDateEl();
+    const isoDate = dateEl?.value ?? '';
     if (_isToday(isoDate)) {
       _setTimePickerDefaultForToday();
     } else {
@@ -334,7 +352,8 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   timeConfirmBtn?.addEventListener('click', () => {
-    const isoDate = dateHidden?.value ?? '';
+    const dateEl = getTimePickerDateEl();
+    const isoDate = dateEl?.value ?? '';
     if (_isToday(isoDate) && _isTimeInPast(tHour, tMin)) {
       if (timePickerErr) {
         timePickerErr.textContent = 'Para hoje, selecione um horário que ainda não passou.';
@@ -344,9 +363,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     if (timePickerErr) { timePickerErr.textContent = ''; timePickerErr.classList.remove('show'); }
     const val = `${String(tHour).padStart(2,'0')}:${String(tMin).padStart(2,'0')}`;
-    if (timeHidden)  timeHidden.value        = val;
-    if (timeDisplay) timeDisplay.textContent = val;
-    timeTrigger?.classList.add('has-value');
+    const dest = _timePickerTarget || { displayEl: timeDisplay, hiddenEl: timeHidden, triggerEl: timeTrigger };
+    if (dest.hiddenEl)  dest.hiddenEl.value        = val;
+    if (dest.displayEl) dest.displayEl.textContent = val;
+    if (dest.triggerEl) dest.triggerEl.classList.add('has-value');
     closeTimePicker();
     quoteResult?.classList.remove('show');
     _clearFieldError('time');
@@ -470,25 +490,39 @@ document.addEventListener('DOMContentLoaded', () => {
     );
   }
 
+  let _countryPickerTarget = null;
   function renderCountryList(items) {
     if (!countryPickerList) return;
     countryPickerList.innerHTML = '';
     countryPickerList.setAttribute('aria-label', 'Lista de países');
     items.forEach(country => {
       const flag = codeToFlag(country.code);
+      const label = `${flag ? flag + ' ' : ''}${country.dial} — ${country.name}`;
       const btn = document.createElement('button');
       btn.type = 'button';
       btn.className = 'address-picker-item';
       btn.role = 'option';
-      btn.textContent = `${flag ? flag + ' ' : ''}${country.dial} — ${country.name}`;
+      btn.textContent = label;
       btn.dataset.code = country.code;
       btn.addEventListener('click', () => {
-        if (phoneCountry) phoneCountry.value = country.code;
-        const triggerText = phoneCountryTrigger?.querySelector('.phone-country-trigger__text');
-        if (triggerText) triggerText.textContent = `${flag ? flag + ' ' : ''}${country.dial} — ${country.name}`;
-        if (phoneCountryTrigger) phoneCountryTrigger.classList.add('has-value');
-        _applyPlaceholderForCountry(country);
-        phoneCountry?.dispatchEvent(new Event('change', { bubbles: true }));
+        const target = _countryPickerTarget;
+        if (target) {
+          if (target.selectEl) target.selectEl.value = country.code;
+          if (target.triggerTextEl) target.triggerTextEl.textContent = label;
+          if (target.triggerEl) target.triggerEl.classList.add('has-value');
+          if (target.inputEl) {
+            target.inputEl.placeholder = country.code === 'BR' ? '(19) 99999-9999' : `${country.dial} número do WhatsApp`;
+            target.inputEl.value = '';
+          }
+          target.selectEl?.dispatchEvent(new Event('change', { bubbles: true }));
+        } else {
+          if (phoneCountry) phoneCountry.value = country.code;
+          const triggerText = phoneCountryTrigger?.querySelector('.phone-country-trigger__text');
+          if (triggerText) triggerText.textContent = label;
+          if (phoneCountryTrigger) phoneCountryTrigger.classList.add('has-value');
+          _applyPlaceholderForCountry(country);
+          phoneCountry?.dispatchEvent(new Event('change', { bubbles: true }));
+        }
         closeCountryPicker();
       });
       countryPickerList.appendChild(btn);
@@ -497,7 +531,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (countryPickerEmpty) countryPickerEmpty.style.display = isEmpty ? 'block' : 'none';
   }
 
-  function openCountryPicker() {
+  function openCountryPicker(target) {
+    _countryPickerTarget = target || null;
     if (countryPickerSearch) { countryPickerSearch.value = ''; countryPickerSearch.focus(); }
     renderCountryList(PHONE_COUNTRIES);
     if (countryPickerOverlay) {
@@ -562,6 +597,11 @@ document.addEventListener('DOMContentLoaded', () => {
   const customQuoteDestination = $('#customQuoteDestination');
   const customQuoteDate     = $('#customQuoteDate');
   const customQuoteTime     = $('#customQuoteTime');
+  const customQuoteDateDisplay = $('#customQuoteDateDisplay');
+  const customQuoteTimeDisplay = $('#customQuoteTimeDisplay');
+  const customQuoteDateTrigger = $('#customQuoteDateTrigger');
+  const customQuoteTimeTrigger = $('#customQuoteTimeTrigger');
+  const customQuotePhoneCountryTrigger = $('#customQuotePhoneCountryTrigger');
   const customQuotePassengers = $('#customQuotePassengers');
   const customQuoteLuggage  = $('#customQuoteLuggage');
 
@@ -570,11 +610,47 @@ document.addEventListener('DOMContentLoaded', () => {
     PHONE_COUNTRIES.forEach(c => {
       const opt = document.createElement('option');
       opt.value = c.code;
-      opt.textContent = `${codeToFlag(c.code) ? codeToFlag(c.code) + ' ' : ''}${c.dial}`;
+      const flag = codeToFlag(c.code);
+      opt.textContent = `${flag ? flag + ' ' : ''}${c.dial} — ${c.name}`;
       if (c.code === 'BR') opt.selected = true;
       customQuotePhoneCountry.appendChild(opt);
     });
   }
+  customQuotePhoneCountryTrigger?.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const triggerTextEl = customQuotePhoneCountryTrigger?.querySelector('.phone-country-trigger__text');
+    openCountryPicker({
+      selectEl: customQuotePhoneCountry,
+      triggerEl: customQuotePhoneCountryTrigger,
+      triggerTextEl: triggerTextEl || undefined,
+      inputEl: customQuotePhone,
+    });
+  });
+  if (customQuotePhoneCountryTrigger && customQuotePhoneCountry?.value) customQuotePhoneCountryTrigger.classList.add('has-value');
+
+  customQuoteDateTrigger?.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    openDatePicker({
+      displayEl: customQuoteDateDisplay,
+      hiddenEl: customQuoteDate,
+      triggerEl: customQuoteDateTrigger,
+    });
+  });
+  customQuoteTimeTrigger?.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    openTimePicker({
+      displayEl: customQuoteTimeDisplay,
+      hiddenEl: customQuoteTime,
+      triggerEl: customQuoteTimeTrigger,
+      dateHiddenEl: customQuoteDate,
+    });
+  });
+  customQuotePhone?.addEventListener('input', () => {
+    if (customQuotePhoneCountry?.value === 'BR') customQuotePhone.value = Validations.maskPhone(customQuotePhone.value);
+  });
 
   function openCustomQuote() {
     if (customQuoteOverlay) {
@@ -617,6 +693,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const el = $(`#${id}`);
         const errEl = $(`#err-${id}`);
         if (el) el.classList.add('field-error');
+        if (field === 'date' && customQuoteDateTrigger) customQuoteDateTrigger.classList.add('field-error');
+        if (field === 'time' && customQuoteTimeTrigger) customQuoteTimeTrigger.classList.add('field-error');
         if (errEl) { errEl.textContent = msg; errEl.classList.add('show'); }
       });
       const firstErr = customQuoteForm?.querySelector('.field-msg.show');

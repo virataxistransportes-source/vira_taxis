@@ -964,7 +964,11 @@
           <div class="form-group">
             <label class="form-label" for="customQuotePhone"><i class="fa-solid fa-phone"></i> Telefone / WhatsApp</label>
             <div class="phone-field">
-              <select id="customQuotePhoneCountry" class="form-input phone-country__select" aria-label="País"><option value="BR">🇧🇷 +55</option></select>
+              <button type="button" id="customQuotePhoneCountryTrigger" class="form-input picker-trigger phone-country-trigger" aria-haspopup="dialog" aria-label="País do telefone">
+                <span class="phone-country-trigger__text">🇧🇷 +55 — Brasil</span>
+                <i class="fa-solid fa-chevron-down"></i>
+              </button>
+              <select id="customQuotePhoneCountry" class="sr-only" aria-hidden="true" tabindex="-1"><option value="BR">🇧🇷 +55 — Brasil</option></select>
               <input type="tel" id="customQuotePhone" class="form-input phone-input" placeholder="(19) 99999-9999" maxlength="20" required />
             </div>
             <span class="field-msg" id="err-customQuotePhone" role="alert"></span>
@@ -988,13 +992,21 @@
         <p class="form-section-label">Data e horário</p>
         <div class="form-row">
           <div class="form-group">
-            <label class="form-label" for="customQuoteDate"><i class="fa-solid fa-calendar"></i> Data</label>
-            <input type="date" id="customQuoteDate" class="form-input" required />
+            <label class="form-label" for="customQuoteDateTrigger"><i class="fa-solid fa-calendar"></i> Data</label>
+            <button type="button" id="customQuoteDateTrigger" class="form-input picker-trigger" aria-haspopup="dialog" aria-required="true">
+              <span id="customQuoteDateDisplay">Selecione a data</span>
+              <i class="fa-solid fa-calendar"></i>
+            </button>
+            <input type="hidden" id="customQuoteDate" />
             <span class="field-msg" id="err-customQuoteDate" role="alert"></span>
           </div>
           <div class="form-group">
-            <label class="form-label" for="customQuoteTime"><i class="fa-solid fa-clock"></i> Horário</label>
-            <input type="time" id="customQuoteTime" class="form-input" required />
+            <label class="form-label" for="customQuoteTimeTrigger"><i class="fa-solid fa-clock"></i> Horário</label>
+            <button type="button" id="customQuoteTimeTrigger" class="form-input picker-trigger" aria-haspopup="dialog" aria-required="true">
+              <span id="customQuoteTimeDisplay">Selecione o horário</span>
+              <i class="fa-solid fa-clock"></i>
+            </button>
+            <input type="hidden" id="customQuoteTime" />
             <span class="field-msg" id="err-customQuoteTime" role="alert"></span>
           </div>
         </div>
