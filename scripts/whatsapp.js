@@ -128,7 +128,7 @@ const WhatsApp = (() => {
   function redirectCustomRoute(data) {
     const url = getUrlCustomRoute(data);
     if (url === '#') return;
-    window.location.href = url;
+    window.open(url, '_blank', 'noopener,noreferrer');
   }
 
   return { redirect, redirectCustomRoute, buildMessage, buildMessageCustomRoute, getUrl, getUrlCustomRoute };
