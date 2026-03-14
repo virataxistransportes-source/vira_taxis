@@ -723,21 +723,13 @@ document.addEventListener('DOMContentLoaded', () => {
       luggage:     String(customQuoteLuggage?.value ?? '0'),
     };
     const { valid, errors } = Validations.validateForm(raw);
-    const placeErrors = {};
-    if (typeof MapsService !== 'undefined' && MapsService.isActive()) {
-      if (raw.origin.length >= 5 && !MapsService.getCustomQuoteOriginPlace()) {
-        placeErrors.origin = 'Selecione o endereço de origem na lista de sugestões ao digitar.';
-      }
-      if (raw.destination.length >= 5 && !MapsService.getCustomQuoteDestinationPlace()) {
-        placeErrors.destination = 'Selecione o endereço de destino na lista de sugestões ao digitar.';
-      }
-    }
-    const allErrors = { ...errors, ...placeErrors };
+    /* Rota customizada: não exige seleção na lista do Places (endereço é fora do padrão) */
+    const allErrors = { ...errors };
     $$('#customQuoteForm .field-msg').forEach(el => { el.textContent = ''; el.classList.remove('show'); });
     $$('#customQuoteForm .form-input').forEach(el => el.classList.remove('field-error'));
     customQuoteDateTrigger?.classList.remove('field-error');
     customQuoteTimeTrigger?.classList.remove('field-error');
-    if (!valid || Object.keys(placeErrors).length > 0) {
+    if (!valid) {
       Object.entries(allErrors).forEach(([field, msg]) => {
         const id = 'customQuote' + field.charAt(0).toUpperCase() + field.slice(1);
         const el = $(`#${id}`);

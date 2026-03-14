@@ -69,8 +69,8 @@ const WhatsApp = (() => {
   }
 
   /**
-   * Mensagem para cotação com rota fora do padrão (sem destinos pré-definidos).
-   * Inclui aviso para a equipe avaliar e não inclui estimativa de distância/preço.
+   * Mensagem para cotação com rota fora do padrão.
+   * Mesma estrutura de buildMessage, sem km nem valor; informa que a cotação é fora dos endereços que atende.
    */
   function buildMessageCustomRoute(data) {
     const name        = _s(data.name);
@@ -85,8 +85,7 @@ const WhatsApp = (() => {
 
     return (
       `Olá, ViraTáxis! 👋\n\n`
-    + `Gostaria de solicitar uma *cotação para uma rota que não está entre os endereços pré-definidos*:\n\n`
-    + `⚠️ *Minha viagem não se enquadra em nenhum dos destinos listados.* Solicito que a equipe avalie a rota e retorne com uma cotação.\n\n`
+    + `Gostaria de solicitar uma *cotação para uma viagem fora dos endereços que vocês atendem*.\n\n`
     + `👤 *Nome:* ${name}\n`
     + `📱 *Telefone:* ${phone}\n\n`
     + `📍 *Origem:* ${origin}\n`
@@ -96,7 +95,7 @@ const WhatsApp = (() => {
     + `👥 *Passageiros:* ${passengers}\n`
     + `🧳 *Bagagens:* ${luggage}\n`
     + `${vehicle}\n\n`
-    + `Aguardo retorno. Obrigado!`
+    + `Aguardo retorno com a cotação. Obrigado!`
     );
   }
 
@@ -129,7 +128,7 @@ const WhatsApp = (() => {
   function redirectCustomRoute(data) {
     const url = getUrlCustomRoute(data);
     if (url === '#') return;
-    window.open(url, '_blank', 'noopener,noreferrer');
+    window.location.href = url;
   }
 
   return { redirect, redirectCustomRoute, buildMessage, buildMessageCustomRoute, getUrl, getUrlCustomRoute };
