@@ -612,6 +612,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const customQuotePhoneCountryTrigger = $('#customQuotePhoneCountryTrigger');
   const customQuotePassengers = $('#customQuotePassengers');
   const customQuoteLuggage  = $('#customQuoteLuggage');
+  const customQuotePassengerDisplay = $('#customQuotePassengerDisplay');
+  const customQuotePassengerMinus   = $('#customQuotePassengerMinus');
+  const customQuotePassengerPlus    = $('#customQuotePassengerPlus');
+  const customQuoteLuggageDisplay   = $('#customQuoteLuggageDisplay');
+  const customQuoteLuggageMinus    = $('#customQuoteLuggageMinus');
+  const customQuoteLuggagePlus     = $('#customQuoteLuggagePlus');
 
   if (customQuotePhoneCountry && PHONE_COUNTRIES.length) {
     customQuotePhoneCountry.innerHTML = '';
@@ -660,6 +666,30 @@ document.addEventListener('DOMContentLoaded', () => {
     if (customQuotePhoneCountry?.value === 'BR') customQuotePhone.value = Validations.maskPhone(customQuotePhone.value);
   });
 
+  /* Steppers de passageiros e bagagem no modal — mesmo padrão do formulário principal */
+  let customQuotePax = 1;
+  let customQuoteLug = 0;
+  function updateCustomQuotePassengers(val) {
+    customQuotePax = Math.max(1, Math.min(6, val));
+    if (customQuotePassengerDisplay) customQuotePassengerDisplay.textContent = customQuotePax;
+    if (customQuotePassengers) customQuotePassengers.value = customQuotePax;
+    if (customQuotePassengerMinus) customQuotePassengerMinus.disabled = customQuotePax <= 1;
+    if (customQuotePassengerPlus) customQuotePassengerPlus.disabled = customQuotePax >= 6;
+  }
+  function updateCustomQuoteLuggage(val) {
+    customQuoteLug = Math.max(0, Math.min(20, val));
+    if (customQuoteLuggageDisplay) customQuoteLuggageDisplay.textContent = customQuoteLug;
+    if (customQuoteLuggage) customQuoteLuggage.value = customQuoteLug;
+    if (customQuoteLuggageMinus) customQuoteLuggageMinus.disabled = customQuoteLug <= 0;
+    if (customQuoteLuggagePlus) customQuoteLuggagePlus.disabled = customQuoteLug >= 20;
+  }
+  customQuotePassengerMinus?.addEventListener('click', () => updateCustomQuotePassengers(customQuotePax - 1));
+  customQuotePassengerPlus?.addEventListener('click', () => updateCustomQuotePassengers(customQuotePax + 1));
+  customQuoteLuggageMinus?.addEventListener('click', () => updateCustomQuoteLuggage(customQuoteLug - 1));
+  customQuoteLuggagePlus?.addEventListener('click', () => updateCustomQuoteLuggage(customQuoteLug + 1));
+  updateCustomQuotePassengers(1);
+  updateCustomQuoteLuggage(0);
+
   /* Validação em tempo real (blur) no modal de cotação — mesmas regras do formulário principal */
   const customQuoteBlurFields = [
     { el: customQuoteName, field: 'name', getValue: () => (customQuoteName?.value ?? '').trim() },
@@ -668,8 +698,8 @@ document.addEventListener('DOMContentLoaded', () => {
     { el: customQuoteDestination, field: 'destination', getValue: () => (customQuoteDestination?.value ?? '').trim() },
     { el: customQuoteDateTrigger, field: 'date', getValue: () => customQuoteDate?.value ?? '' },
     { el: customQuoteTimeTrigger, field: 'time', getValue: () => customQuoteTime?.value ?? '' },
-    { el: customQuotePassengers, field: 'passengers', getValue: () => String(customQuotePassengers?.value ?? '1') },
-    { el: customQuoteLuggage, field: 'luggage', getValue: () => String(customQuoteLuggage?.value ?? '0') },
+    { el: customQuotePassengerMinus, field: 'passengers', getValue: () => String(customQuotePassengers?.value ?? '1') },
+    { el: customQuoteLuggageMinus, field: 'luggage', getValue: () => String(customQuoteLuggage?.value ?? '0') },
   ];
   customQuoteBlurFields.forEach(({ el, field, getValue }) => {
     el?.addEventListener('blur', () => {
