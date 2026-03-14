@@ -363,6 +363,42 @@ document.addEventListener('DOMContentLoaded', () => {
   const phoneCountry = $('#phoneCountry');
   const phoneCountryTrigger = $('#phoneCountryTrigger');
 
+  /**
+   * Normaliza valor de telefone pré-preenchido no formato internacional (ex: +55 (19) 99999-9999).
+   * Retorna { country, nationalFormatted } ou null. Ordena países por tamanho do DDI (desc) para acertar +351 antes de +35.
+   */
+  function parseInternationalPhone(rawValue) {
+    if (!rawValue || typeof rawValue !== 'string') return null;
+    const fullDigits = rawValue.replace(/\D/g, '');
+    if (fullDigits.length < 10) return null;
+    const byDialLength = [...PHONE_COUNTRIES].sort((a, b) => (b.dial.length - a.dial.length));
+    for (const country of byDialLength) {
+      const code = country.dial.replace(/\D/g, '');
+      if (!code || fullDigits.length < code.length) continue;
+      if (fullDigits.indexOf(code) !== 0) continue;
+      const nationalDigits = fullDigits.slice(code.length);
+      if (country.code === 'BR') {
+        if (nationalDigits.length < 10 || nationalDigits.length > 11) continue;
+        return { country, nationalFormatted: Validations.maskPhone(nationalDigits), nationalDigits };
+      }
+      return { country, nationalFormatted: nationalDigits.slice(0, 20), nationalDigits };
+    }
+    return null;
+  }
+
+  function applyParsedPhone(parsed) {
+    if (!parsed || !phoneCountry || !phoneInput) return;
+    phoneCountry.value = parsed.country.code;
+    phoneInput.value = parsed.nationalFormatted;
+    const triggerText = phoneCountryTrigger?.querySelector('.phone-country-trigger__text');
+    const flag = codeToFlag(parsed.country.code);
+    if (triggerText) triggerText.textContent = `${flag ? flag + ' ' : ''}${parsed.country.dial} — ${parsed.country.name}`;
+    if (phoneCountryTrigger) phoneCountryTrigger.classList.add('has-value');
+    const selected = PHONE_COUNTRIES.find(c => c.code === parsed.country.code) || PHONE_COUNTRIES[0];
+    if (selected.code === 'BR') phoneInput.placeholder = '(19) 99999-9999';
+    else phoneInput.placeholder = `${selected.dial} número do WhatsApp`;
+  }
+
   // Popula select oculto com a lista de países (para submit e valor atual)
   if (phoneCountry && PHONE_COUNTRIES.length) {
     phoneCountry.innerHTML = '';
@@ -398,7 +434,24 @@ document.addEventListener('DOMContentLoaded', () => {
     phoneInput.value = '';
   }
 
-  phoneInput?.addEventListener('input', _applyPhoneMask);
+  function valueLooksInternational(v) {
+    if (!v) return false;
+    if (String(v).trim().indexOf('+') === 0) return true;
+    const d = String(v).replace(/\D/g, '');
+    return d.length > 11;
+  }
+  let autofillNormalized = false;
+  function maybeNormalizeAutofill() {
+    if (autofillNormalized || !phoneInput?.value) return;
+    if (!valueLooksInternational(phoneInput.value)) return;
+    const parsed = parseInternationalPhone(phoneInput.value);
+    if (parsed) { applyParsedPhone(parsed); autofillNormalized = true; }
+  }
+
+  phoneInput?.addEventListener('input', () => {
+    maybeNormalizeAutofill();
+    _applyPhoneMask();
+  });
 
   /* Country picker (DDI) — mesmo padrão do seletor de endereço */
   const countryPickerOverlay = $('#countryPickerOverlay');
@@ -478,6 +531,21 @@ document.addEventListener('DOMContentLoaded', () => {
   phoneCountry?.addEventListener('change', () => {
     const selected = PHONE_COUNTRIES.find(c => c.code === phoneCountry.value) || PHONE_COUNTRIES[0];
     _applyPlaceholderForCountry(selected);
+  });
+
+  // Normaliza telefone pré-preenchido no formato internacional (ex: +55 (19) 99999-9999)
+  if (phoneInput?.value) {
+    const parsed = parseInternationalPhone(phoneInput.value);
+    if (parsed) applyParsedPhone(parsed);
+  }
+  setTimeout(() => { maybeNormalizeAutofill(); }, 500);
+  phoneInput?.addEventListener('paste', (e) => {
+    const pasted = (e.clipboardData || window.clipboardData)?.getData('text') || '';
+    const parsed = parseInternationalPhone(pasted);
+    if (parsed) {
+      e.preventDefault();
+      applyParsedPhone(parsed);
+    }
   });
 
   /* ── 8. STEPPER DE PASSAGEIROS ─────────────────────────── */
