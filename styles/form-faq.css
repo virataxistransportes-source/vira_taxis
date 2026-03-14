@@ -758,6 +758,11 @@
   visibility: visible;
   pointer-events: auto;
 }
+/* País e data: quando abertos, ficam acima do modal de cotação (que também é .picker-overlay) */
+#countryPickerOverlay.is-open,
+#datePickerOverlay.is-open {
+  z-index: 10000;
+}
 
 /* Modal */
 .picker-modal {
