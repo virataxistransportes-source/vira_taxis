@@ -242,20 +242,20 @@
   pointer-events: none;
 }
 
-/* Origem e destino */
+/* Origem e destino — no desktop a seção estende até as bordas do card (sem max-width para não limitar) */
 .form-route-section {
   margin-left: -1.6rem;
   margin-right: -1.6rem;
   padding-left: 1.6rem;
   padding-right: 1.6rem;
   width: calc(100% + 3.2rem);
-  max-width: 100%;
   box-sizing: border-box;
 }
 .form-group--route { flex: 1; min-width: 0; width: 100%; }
 .input-with-icon--route { width: 100%; min-width: 0; }
 .input-with-icon--route .form-input--route {
   width: 100%;
+  min-width: 0;
   min-height: 52px;
   padding: .85rem 3.3rem .85rem 1rem;
   font-size: .95rem;
