@@ -33,17 +33,24 @@
 /* Card flutuante com slogan (mesma tipografia do hero) */
 .agendamento__slogan-float {
   position: relative;
+  overflow: visible;
   background: var(--white);
   border-radius: var(--r-xl);
   box-shadow: var(--sh-xl);
   border: 1px solid var(--line);
-  padding: 1.35rem 1.6rem;
+  padding: 1.5rem 1.6rem 2rem;
   margin-bottom: 2rem;
   animation: floatCard 4.5s ease-in-out infinite;
 }
-/* Badges flutuantes (mesma posição do hero: topo dir. e base esq.) */
-.agendamento__slogan-float .float-badge--1 { top: 4%; right: -16px; }
-.agendamento__slogan-float .float-badge--2 { bottom: 6%; left: -16px; }
+/* Badges fora do card para não sobrepor o texto: topo dir. e base esq. */
+.agendamento__slogan-float .float-badge--1 {
+  top: -12px;
+  right: 12px;
+}
+.agendamento__slogan-float .float-badge--2 {
+  bottom: -12px;
+  left: 12px;
+}
 .agendamento__tag {
   margin-bottom: .9rem;
   font-size: .7rem;
