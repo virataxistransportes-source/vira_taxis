@@ -106,6 +106,22 @@ const MapsService = (() => {
       if (storeKey === 'origin') _customQuoteOriginPlace = null;
       if (storeKey === 'destination') _customQuoteDestinationPlace = null;
     });
+
+    // Ao sair do campo: se há texto mas não foi seleção do autocomplete, tenta geocodificar (igual ao formulário principal)
+    el.addEventListener('blur', () => {
+      const address = (el.value || '').trim();
+      const hasPlace = (storeKey === 'origin' && _customQuoteOriginPlace) || (storeKey === 'destination' && _customQuoteDestinationPlace);
+      if (address.length < 8 || hasPlace) return;
+
+      _geocodeToPlace(address, (place) => {
+        if (!place) return;
+        const addr = (place.formatted_address || place.name || '').slice(0, 300);
+        el.value = addr;
+        el.dispatchEvent(new Event('change', { bubbles: true }));
+        if (storeKey === 'origin') _customQuoteOriginPlace = place;
+        if (storeKey === 'destination') _customQuoteDestinationPlace = place;
+      });
+    });
   }
 
   function _initACImmediateQuote(id, storeKey) {
