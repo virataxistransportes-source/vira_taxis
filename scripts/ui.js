@@ -260,11 +260,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (dest.triggerEl) dest.triggerEl.classList.add('has-value');
         closeDatePicker();
         quoteResult?.classList.remove('show');
-        if (_datePickerTarget) {
-          if (typeof setCustomQuoteFieldError === 'function') setCustomQuoteFieldError('date', '');
-        } else {
-          _clearFieldError('date');
-        }
+        if (_datePickerTarget?.isImmediate && typeof setImmediateQuoteFieldError === 'function') setImmediateQuoteFieldError('date', '');
+        else if (_datePickerTarget && typeof setCustomQuoteFieldError === 'function') setCustomQuoteFieldError('date', '');
+        else _clearFieldError('date');
       });
       calGrid.appendChild(btn);
     }
@@ -373,11 +371,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (dest.triggerEl) dest.triggerEl.classList.add('has-value');
     closeTimePicker();
     quoteResult?.classList.remove('show');
-    if (_timePickerTarget) {
-      if (typeof setCustomQuoteFieldError === 'function') setCustomQuoteFieldError('time', '');
-    } else {
-      _clearFieldError('time');
-    }
+    if (_timePickerTarget?.isImmediate && typeof setImmediateQuoteFieldError === 'function') setImmediateQuoteFieldError('time', '');
+    else if (_timePickerTarget && typeof setCustomQuoteFieldError === 'function') setCustomQuoteFieldError('time', '');
+    else _clearFieldError('time');
   });
 
   document.addEventListener('keydown', (e) => {
@@ -789,6 +785,224 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     WhatsApp.redirectCustomRoute(data);
     closeCustomQuote();
+  });
+
+  /* ── 7.2 MODAL EMBARQUE IMEDIATO ─────────────────────────── */
+  const immediateQuoteOverlay   = $('#immediateQuoteOverlay');
+  const openImmediateQuoteModal  = $('#openImmediateQuoteModal');
+  const closeImmediateQuoteModal = $('#closeImmediateQuoteModal');
+  const immediateQuoteCancelBtn = $('#immediateQuoteCancelBtn');
+  const immediateQuoteForm      = $('#immediateQuoteForm');
+  const immediateQuoteSubmitBtn  = $('#immediateQuoteSubmitBtn');
+  const immediateQuoteName      = $('#immediateQuoteName');
+  const immediateQuotePhone     = $('#immediateQuotePhone');
+  const immediateQuotePhoneCountry = $('#immediateQuotePhoneCountry');
+  const immediateQuoteOrigin    = $('#immediateQuoteOrigin');
+  const immediateQuoteDestination = $('#immediateQuoteDestination');
+  const immediateQuoteDate      = $('#immediateQuoteDate');
+  const immediateQuoteTime      = $('#immediateQuoteTime');
+  const immediateQuoteDateDisplay = $('#immediateQuoteDateDisplay');
+  const immediateQuoteTimeDisplay = $('#immediateQuoteTimeDisplay');
+  const immediateQuoteDateTrigger = $('#immediateQuoteDateTrigger');
+  const immediateQuoteTimeTrigger = $('#immediateQuoteTimeTrigger');
+  const immediateQuotePhoneCountryTrigger = $('#immediateQuotePhoneCountryTrigger');
+  const immediateQuotePassengers = $('#immediateQuotePassengers');
+  const immediateQuoteLuggage   = $('#immediateQuoteLuggage');
+  const immediateQuotePassengerDisplay = $('#immediateQuotePassengerDisplay');
+  const immediateQuotePassengerMinus  = $('#immediateQuotePassengerMinus');
+  const immediateQuotePassengerPlus   = $('#immediateQuotePassengerPlus');
+  const immediateQuoteLuggageDisplay  = $('#immediateQuoteLuggageDisplay');
+  const immediateQuoteLuggageMinus    = $('#immediateQuoteLuggageMinus');
+  const immediateQuoteLuggagePlus     = $('#immediateQuoteLuggagePlus');
+  const immediateQuoteResult    = $('#immediateQuoteResult');
+  const immediateQuoteAmount    = $('#immediateQuoteAmount');
+  const immediateQuoteVehicleIcon = $('#immediateQuoteVehicleIcon');
+  const immediateQuoteVehicleLabel = $('#immediateQuoteVehicleLabel');
+  const immediateQuoteDistNote  = $('#immediateQuoteDistNote');
+  const immediateQuoteWhatsappBtn = $('#immediateQuoteWhatsappBtn');
+
+  if (immediateQuotePhoneCountry && PHONE_COUNTRIES.length) {
+    immediateQuotePhoneCountry.innerHTML = '';
+    PHONE_COUNTRIES.forEach(c => {
+      const opt = document.createElement('option');
+      opt.value = c.code;
+      const flag = codeToFlag(c.code);
+      opt.textContent = `${flag ? flag + ' ' : ''}${c.dial} — ${c.name}`;
+      if (c.code === 'BR') opt.selected = true;
+      immediateQuotePhoneCountry.appendChild(opt);
+    });
+  }
+  immediateQuotePhoneCountryTrigger?.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const triggerTextEl = immediateQuotePhoneCountryTrigger?.querySelector('.phone-country-trigger__text');
+    openCountryPicker({
+      selectEl: immediateQuotePhoneCountry,
+      triggerEl: immediateQuotePhoneCountryTrigger,
+      triggerTextEl: triggerTextEl || undefined,
+      inputEl: immediateQuotePhone,
+    });
+  });
+
+  immediateQuoteDateTrigger?.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    openDatePicker({
+      displayEl: immediateQuoteDateDisplay,
+      hiddenEl: immediateQuoteDate,
+      triggerEl: immediateQuoteDateTrigger,
+      isImmediate: true,
+    });
+  });
+  immediateQuoteTimeTrigger?.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    openTimePicker({
+      displayEl: immediateQuoteTimeDisplay,
+      hiddenEl: immediateQuoteTime,
+      triggerEl: immediateQuoteTimeTrigger,
+      dateHiddenEl: immediateQuoteDate,
+      isImmediate: true,
+    });
+  });
+  immediateQuotePhone?.addEventListener('input', () => {
+    if (immediateQuotePhoneCountry?.value === 'BR') immediateQuotePhone.value = Validations.maskPhone(immediateQuotePhone.value);
+  });
+
+  let immediateQuotePax = 1;
+  let immediateQuoteLug = 0;
+  function updateImmediateQuotePassengers(val) {
+    immediateQuotePax = Math.max(1, Math.min(6, val));
+    if (immediateQuotePassengerDisplay) immediateQuotePassengerDisplay.textContent = immediateQuotePax;
+    if (immediateQuotePassengers) immediateQuotePassengers.value = immediateQuotePax;
+    if (immediateQuotePassengerMinus) immediateQuotePassengerMinus.disabled = immediateQuotePax <= 1;
+    if (immediateQuotePassengerPlus) immediateQuotePassengerPlus.disabled = immediateQuotePax >= 6;
+  }
+  function updateImmediateQuoteLuggage(val) {
+    immediateQuoteLug = Math.max(0, Math.min(20, val));
+    if (immediateQuoteLuggageDisplay) immediateQuoteLuggageDisplay.textContent = immediateQuoteLug;
+    if (immediateQuoteLuggage) immediateQuoteLuggage.value = immediateQuoteLug;
+    if (immediateQuoteLuggageMinus) immediateQuoteLuggageMinus.disabled = immediateQuoteLug <= 0;
+    if (immediateQuoteLuggagePlus) immediateQuoteLuggagePlus.disabled = immediateQuoteLug >= 20;
+  }
+  immediateQuotePassengerMinus?.addEventListener('click', () => updateImmediateQuotePassengers(immediateQuotePax - 1));
+  immediateQuotePassengerPlus?.addEventListener('click', () => updateImmediateQuotePassengers(immediateQuotePax + 1));
+  immediateQuoteLuggageMinus?.addEventListener('click', () => updateImmediateQuoteLuggage(immediateQuoteLug - 1));
+  immediateQuoteLuggagePlus?.addEventListener('click', () => updateImmediateQuoteLuggage(immediateQuoteLug + 1));
+  updateImmediateQuotePassengers(1);
+  updateImmediateQuoteLuggage(0);
+
+  function openImmediateQuote() {
+    if (immediateQuoteOverlay) {
+      immediateQuoteOverlay.classList.add('is-open');
+      immediateQuoteOverlay.setAttribute('aria-hidden', 'false');
+      document.body.classList.add('no-scroll');
+    }
+    immediateQuoteResult?.classList.remove('show');
+    if (typeof MapsService !== 'undefined' && MapsService.resetImmediate) MapsService.resetImmediate();
+  }
+  function closeImmediateQuote() {
+    if (immediateQuoteOverlay) {
+      immediateQuoteOverlay.classList.remove('is-open');
+      immediateQuoteOverlay.setAttribute('aria-hidden', 'true');
+      document.body.classList.remove('no-scroll');
+    }
+  }
+
+  openImmediateQuoteModal?.addEventListener('click', (e) => { e.preventDefault(); openImmediateQuote(); });
+  closeImmediateQuoteModal?.addEventListener('click', closeImmediateQuote);
+  immediateQuoteCancelBtn?.addEventListener('click', closeImmediateQuote);
+  immediateQuoteOverlay?.addEventListener('click', (e) => { if (e.target === immediateQuoteOverlay) closeImmediateQuote(); });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && immediateQuoteOverlay?.classList.contains('is-open')) closeImmediateQuote();
+  });
+
+  function setImmediateQuoteFieldError(field, msg) {
+    const id = 'immediateQuote' + field.charAt(0).toUpperCase() + field.slice(1);
+    const errEl = $(`#err-${id}`);
+    let input = $(`#${id}`);
+    if (field === 'date') input = immediateQuoteDateTrigger;
+    if (field === 'time') input = immediateQuoteTimeTrigger;
+    if (errEl) { errEl.textContent = msg || ''; errEl.classList.toggle('show', !!msg); }
+    input?.classList.toggle('field-error', !!msg);
+    if (field === 'date' && immediateQuoteDateTrigger) immediateQuoteDateTrigger.classList.toggle('field-error', !!msg);
+    if (field === 'time' && immediateQuoteTimeTrigger) immediateQuoteTimeTrigger.classList.toggle('field-error', !!msg);
+  }
+
+  immediateQuoteSubmitBtn?.addEventListener('click', () => {
+    const raw = {
+      name:        (immediateQuoteName?.value ?? '').trim(),
+      phone:       (immediateQuotePhone?.value ?? '').trim(),
+      origin:      (immediateQuoteOrigin?.value ?? '').trim(),
+      destination: (immediateQuoteDestination?.value ?? '').trim(),
+      date:        immediateQuoteDate?.value ?? '',
+      time:        immediateQuoteTime?.value ?? '',
+      passengers:  String(immediateQuotePassengers?.value ?? '1'),
+      luggage:     String(immediateQuoteLuggage?.value ?? '0'),
+    };
+    const { valid, errors } = Validations.validateForm(raw);
+    $$('#immediateQuoteForm .field-msg').forEach(el => { el.textContent = ''; el.classList.remove('show'); });
+    $$('#immediateQuoteForm .form-input').forEach(el => el.classList.remove('field-error'));
+    immediateQuoteDateTrigger?.classList.remove('field-error');
+    immediateQuoteTimeTrigger?.classList.remove('field-error');
+    if (!valid) {
+      Object.entries(errors).forEach(([field, msg]) => {
+        const id = 'immediateQuote' + field.charAt(0).toUpperCase() + field.slice(1);
+        const el = $(`#${id}`);
+        const errEl = $(`#err-${id}`);
+        if (el) el.classList.add('field-error');
+        if (field === 'date' && immediateQuoteDateTrigger) immediateQuoteDateTrigger.classList.add('field-error');
+        if (field === 'time' && immediateQuoteTimeTrigger) immediateQuoteTimeTrigger.classList.add('field-error');
+        if (errEl) { errEl.textContent = msg; errEl.classList.add('show'); }
+      });
+      const firstErr = immediateQuoteForm?.querySelector('.field-msg.show');
+      if (firstErr) firstErr.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      return;
+    }
+    const paxNum = Math.max(1, Math.min(6, parseInt(raw.passengers, 10) || 1));
+    const luggageNum = Math.max(0, Math.min(20, parseInt(raw.luggage, 10) || 0));
+    const info = Pricing.getVehicleInfo(paxNum);
+
+    function applyResult(km, total) {
+      if (immediateQuoteVehicleIcon) immediateQuoteVehicleIcon.className = `fa-solid ${info.vehicleIcon}`;
+      if (immediateQuoteVehicleLabel) immediateQuoteVehicleLabel.textContent = info.vehicleLabel;
+      if (immediateQuoteAmount) immediateQuoteAmount.textContent = (total != null && Number.isFinite(total)) ? Pricing.formatAmount(total) : '--';
+      if (immediateQuoteDistNote) immediateQuoteDistNote.textContent = km != null ? `~${km} km estimados` : 'Preço confirmado via WhatsApp';
+      immediateQuoteResult?.classList.add('show');
+      const selected = PHONE_COUNTRIES.find(c => c.code === (immediateQuotePhoneCountry?.value || 'BR')) || PHONE_COUNTRIES[0];
+      const phoneDisplay = selected.dial + ' ' + (raw.phone || '').trim();
+      const waData = {
+        name: raw.name,
+        phone: phoneDisplay,
+        origin: raw.origin,
+        destination: raw.destination,
+        date: raw.date,
+        time: raw.time,
+        passengers: paxNum,
+        luggage: luggageNum,
+        requiresVan: info.requiresVan,
+        estimatedKm: km ?? undefined,
+        total: total ?? undefined,
+      };
+      const waUrl = WhatsApp.getUrlImmediatePickup(waData);
+      if (immediateQuoteWhatsappBtn) {
+        if (_isValidWhatsAppUrl(waUrl)) {
+          immediateQuoteWhatsappBtn.setAttribute('href', waUrl);
+        } else {
+          immediateQuoteWhatsappBtn.setAttribute('href', '#');
+        }
+      }
+      immediateQuoteResult?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    if (typeof MapsService !== 'undefined' && MapsService.requestImmediateDistance) {
+      MapsService.requestImmediateDistance((km) => {
+        const pricing = (km != null && Number.isFinite(km)) ? Pricing.calculate(km, paxNum) : {};
+        applyResult(km, pricing.total ?? null);
+      });
+    } else {
+      applyResult(null, null);
+    }
   });
 
   /* ── 8. STEPPER DE PASSAGEIROS ─────────────────────────── */

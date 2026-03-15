@@ -889,12 +889,17 @@
 
 </footer>
 
-<!-- WhatsApp flutuante -->
-<a href="https://wa.me/5519988244480" target="_blank" rel="noopener noreferrer"
-   class="wa-float" aria-label="Fale conosco pelo WhatsApp">
-  <i class="fa-brands fa-whatsapp"></i>
-  <span>Fale conosco</span>
-</a>
+<!-- Botão embarcar agora + WhatsApp flutuante -->
+<div class="wa-float-wrap">
+  <button type="button" class="wa-float-cta" id="openImmediateQuoteModal" aria-controls="immediateQuoteOverlay">
+    Quer embarcar agora?
+  </button>
+  <a href="https://wa.me/5519988244480" target="_blank" rel="noopener noreferrer"
+     class="wa-float" aria-label="Fale conosco pelo WhatsApp">
+    <i class="fa-brands fa-whatsapp"></i>
+    <span>Fale conosco</span>
+  </a>
+</div>
 
 <!-- Modais de Data e Horário -->
 <div class="picker-overlay" id="datePickerOverlay" role="dialog" aria-modal="true" aria-label="Selecionar data" aria-hidden="true">
@@ -1045,6 +1050,130 @@
           <button type="button" class="btn btn--outline btn--sm" id="customQuoteCancelBtn">Cancelar</button>
           <button type="button" class="btn btn--primary btn--sm" id="customQuoteSubmitBtn">
             <i class="fa-solid fa-paper-plane"></i> Solicitar
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Embarque imediato -->
+<div class="picker-overlay" id="immediateQuoteOverlay" role="dialog" aria-modal="true" aria-label="Embarque imediato" aria-hidden="true">
+  <div class="picker-modal custom-quote-modal immediate-quote-modal" role="document">
+    <div class="picker-modal__header">
+      <span class="picker-modal__title">Quer embarcar agora?</span>
+      <button type="button" class="custom-quote-close" id="closeImmediateQuoteModal" aria-label="Fechar"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="custom-quote-body">
+      <p class="custom-quote-desc immediate-quote-desc">Preencha os dados abaixo. Será avaliada a <strong>disponibilidade de um veículo ir até você</strong> para o horário informado. Sua solicitação será enviada para a equipe e você receberá a estimativa e a confirmação pelo WhatsApp.</p>
+      <form id="immediateQuoteForm" novalidate aria-label="Formulário de embarque imediato">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="immediateQuoteName"><i class="fa-solid fa-user"></i> Nome completo</label>
+            <input type="text" id="immediateQuoteName" class="form-input" placeholder="Seu nome completo" maxlength="100" required />
+            <span class="field-msg" id="err-immediateQuoteName" role="alert"></span>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="immediateQuotePhone"><i class="fa-solid fa-phone"></i> Telefone / WhatsApp</label>
+            <div class="phone-field">
+              <button type="button" id="immediateQuotePhoneCountryTrigger" class="form-input picker-trigger phone-country-trigger" aria-haspopup="dialog" aria-label="País do telefone">
+                <span class="phone-country-trigger__text">🇧🇷 +55 — Brasil</span>
+                <i class="fa-solid fa-chevron-down"></i>
+              </button>
+              <select id="immediateQuotePhoneCountry" class="sr-only" aria-hidden="true" tabindex="-1"><option value="BR">🇧🇷 +55 — Brasil</option></select>
+              <input type="tel" id="immediateQuotePhone" class="form-input phone-input" placeholder="(19) 99999-9999" maxlength="20" required />
+            </div>
+            <span class="field-msg" id="err-immediateQuotePhone" role="alert"></span>
+          </div>
+        </div>
+        <p class="form-section-label">Rota</p>
+        <div class="form-row form-row--single">
+          <div class="form-group">
+            <label class="form-label" for="immediateQuoteOrigin"><i class="fa-solid fa-circle-dot"></i> Endereço de origem</label>
+            <input type="text" id="immediateQuoteOrigin" class="form-input" placeholder="Ex: Endereço completo de partida" maxlength="300" required autocomplete="off" />
+            <span class="field-msg" id="err-immediateQuoteOrigin" role="alert"></span>
+          </div>
+        </div>
+        <div class="form-row form-row--single">
+          <div class="form-group">
+            <label class="form-label" for="immediateQuoteDestination"><i class="fa-solid fa-location-dot"></i> Endereço de destino</label>
+            <input type="text" id="immediateQuoteDestination" class="form-input" placeholder="Ex: Endereço completo de chegada" maxlength="300" required autocomplete="off" />
+            <span class="field-msg" id="err-immediateQuoteDestination" role="alert"></span>
+          </div>
+        </div>
+        <p class="form-section-label">Data e horário</p>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="immediateQuoteDateTrigger"><i class="fa-solid fa-calendar"></i> Data</label>
+            <button type="button" id="immediateQuoteDateTrigger" class="form-input picker-trigger" aria-haspopup="dialog" aria-required="true">
+              <span id="immediateQuoteDateDisplay">Selecione a data</span>
+              <i class="fa-solid fa-calendar"></i>
+            </button>
+            <input type="hidden" id="immediateQuoteDate" />
+            <span class="field-msg" id="err-immediateQuoteDate" role="alert"></span>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="immediateQuoteTimeTrigger"><i class="fa-solid fa-clock"></i> Horário</label>
+            <button type="button" id="immediateQuoteTimeTrigger" class="form-input picker-trigger" aria-haspopup="dialog" aria-required="true">
+              <span id="immediateQuoteTimeDisplay">Selecione o horário</span>
+              <i class="fa-solid fa-clock"></i>
+            </button>
+            <input type="hidden" id="immediateQuoteTime" />
+            <span class="field-msg" id="err-immediateQuoteTime" role="alert"></span>
+          </div>
+        </div>
+        <p class="form-section-label">Passageiros e bagagem</p>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label"><i class="fa-solid fa-users"></i> Passageiros (1–6)</label>
+            <div class="stepper" role="group" aria-label="Número de passageiros">
+              <button type="button" class="stepper__btn" id="immediateQuotePassengerMinus" aria-label="Diminuir">
+                <i class="fa-solid fa-minus"></i>
+              </button>
+              <span class="stepper__display" id="immediateQuotePassengerDisplay" aria-live="polite">1</span>
+              <input type="hidden" id="immediateQuotePassengers" name="immediateQuotePassengers" value="1" />
+              <button type="button" class="stepper__btn" id="immediateQuotePassengerPlus" aria-label="Aumentar">
+                <i class="fa-solid fa-plus"></i>
+              </button>
+            </div>
+            <span class="field-msg" id="err-immediateQuotePassengers" role="alert"></span>
+          </div>
+          <div class="form-group">
+            <label class="form-label"><i class="fa-solid fa-suitcase"></i> Bagagens (0–20)</label>
+            <div class="stepper" role="group" aria-label="Número de bagagens">
+              <button type="button" class="stepper__btn" id="immediateQuoteLuggageMinus" aria-label="Diminuir bagagens">
+                <i class="fa-solid fa-minus"></i>
+              </button>
+              <span class="stepper__display" id="immediateQuoteLuggageDisplay" aria-live="polite">0</span>
+              <input type="hidden" id="immediateQuoteLuggage" name="immediateQuoteLuggage" value="0" />
+              <button type="button" class="stepper__btn" id="immediateQuoteLuggagePlus" aria-label="Aumentar bagagens">
+                <i class="fa-solid fa-plus"></i>
+              </button>
+            </div>
+            <span class="field-msg" id="err-immediateQuoteLuggage" role="alert"></span>
+          </div>
+        </div>
+        <div class="quote-result immediate-quote-result" id="immediateQuoteResult" role="status" aria-live="polite">
+          <p class="quote-result__label">Estimativa para sua viagem</p>
+          <div class="quote-result__value">
+            <sup>R$</sup><span id="immediateQuoteAmount">--</span>
+          </div>
+          <div class="quote-result__meta">
+            <div class="quote-result__vehicle">
+              <i class="fa-solid fa-car" id="immediateQuoteVehicleIcon"></i>
+              <span id="immediateQuoteVehicleLabel">Sedan</span>
+            </div>
+            <span class="quote-result__note" id="immediateQuoteDistNote"></span>
+          </div>
+          <p class="quote-result__disclaimer">Valor estimado. A equipe confirmará disponibilidade e valor final via WhatsApp.</p>
+          <a href="#" class="btn btn--primary btn--full" id="immediateQuoteWhatsappBtn" target="_blank" rel="noopener noreferrer">
+            <i class="fa-brands fa-whatsapp"></i> Solicitar via WhatsApp
+          </a>
+        </div>
+        <div class="picker-modal__footer immediate-quote-footer">
+          <button type="button" class="btn btn--outline btn--sm" id="immediateQuoteCancelBtn">Cancelar</button>
+          <button type="button" class="btn btn--primary btn--sm" id="immediateQuoteSubmitBtn">
+            <i class="fa-solid fa-calculator"></i> Ver estimativa
           </button>
         </div>
       </form>

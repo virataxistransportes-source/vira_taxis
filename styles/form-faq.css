@@ -1002,7 +1002,8 @@
   margin-top: 2px;
   overflow: hidden;
 }
-body:has(#customQuoteOverlay.is-open) .pac-container {
+body:has(#customQuoteOverlay.is-open) .pac-container,
+body:has(#immediateQuoteOverlay.is-open) .pac-container {
   z-index: 10001 !important;
 }
 .pac-container::after {

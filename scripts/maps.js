@@ -17,6 +17,9 @@ const MapsService = (() => {
   let _km     = null;
   let _customQuoteOriginPlace = null;
   let _customQuoteDestinationPlace = null;
+  let _immediateOriginPlace = null;
+  let _immediateDestinationPlace = null;
+  let _immediateKm = null;
 
   function _initAC(id, onSelect) {
     const el = document.getElementById(id);
@@ -105,6 +108,76 @@ const MapsService = (() => {
     });
   }
 
+  function _initACImmediateQuote(id, storeKey) {
+    const el = document.getElementById(id);
+    if (!el || el.dataset.acInit) return;
+    el.dataset.acInit = '1';
+
+    const ac = new google.maps.places.Autocomplete(el, {
+      componentRestrictions: { country: 'br' },
+      fields: ['geometry', 'formatted_address', 'name'],
+    });
+
+    el.addEventListener('keydown', e => {
+      if (e.key === 'Enter') {
+        const pac = document.querySelector('.pac-container');
+        if (pac && getComputedStyle(pac).display !== 'none') e.preventDefault();
+      }
+    });
+
+    ac.addListener('place_changed', () => {
+      const place = ac.getPlace();
+      if (!place || !place.geometry) return;
+      const addr = (place.formatted_address || place.name || '').slice(0, 300);
+      el.value = addr;
+      el.dispatchEvent(new Event('change', { bubbles: true }));
+      if (storeKey === 'origin') _immediateOriginPlace = place;
+      if (storeKey === 'destination') _immediateDestinationPlace = place;
+      _immediateKm = null;
+      _tryDistImmediate();
+    });
+
+    el.addEventListener('input', () => {
+      if (storeKey === 'origin') { _immediateOriginPlace = null; _immediateKm = null; }
+      if (storeKey === 'destination') { _immediateDestinationPlace = null; _immediateKm = null; }
+    });
+  }
+
+  function _tryDistImmediate(callback) {
+    if (!_immediateOriginPlace?.geometry || !_immediateDestinationPlace?.geometry) {
+      if (typeof callback === 'function') callback(null);
+      return;
+    }
+
+    new google.maps.DistanceMatrixService().getDistanceMatrix(
+      {
+        origins:      [_immediateOriginPlace.geometry.location],
+        destinations: [_immediateDestinationPlace.geometry.location],
+        travelMode:   google.maps.TravelMode.DRIVING,
+        unitSystem:   google.maps.UnitSystem.METRIC,
+      },
+      (res, status) => {
+        if (status !== 'OK') {
+          if (typeof callback === 'function') callback(null);
+          return;
+        }
+        const el = res?.rows?.[0]?.elements?.[0];
+        if (!el || el.status !== 'OK') {
+          if (typeof callback === 'function') callback(null);
+          return;
+        }
+        const meters = el.distance?.value;
+        if (!meters || !Number.isFinite(meters) || meters <= 0 || meters > 2000000) {
+          if (typeof callback === 'function') callback(null);
+          return;
+        }
+        _immediateKm = Math.ceil(meters / 1000);
+        document.dispatchEvent(new CustomEvent('maps:immediate-distance', { detail: { km: _immediateKm } }));
+        if (typeof callback === 'function') callback(_immediateKm);
+      }
+    );
+  }
+
   function _geocodeAndSet(id, address, onDone) {
     if (!address || address.trim().length < 8) { onDone(null); return; }
     const geocoder = new google.maps.Geocoder();
@@ -156,6 +229,8 @@ const MapsService = (() => {
       _initAC('destination', p => { _dest   = p; _tryDist(); });
       _initACCustomQuote('customQuoteOrigin', 'origin');
       _initACCustomQuote('customQuoteDestination', 'destination');
+      _initACImmediateQuote('immediateQuoteOrigin', 'origin');
+      _initACImmediateQuote('immediateQuoteDestination', 'destination');
     };
 
     if (document.readyState === 'loading') {
@@ -209,7 +284,20 @@ const MapsService = (() => {
   function getDestinationPlace()        { return _dest; }
   function getCustomQuoteOriginPlace()      { return _customQuoteOriginPlace; }
   function getCustomQuoteDestinationPlace() { return _customQuoteDestinationPlace; }
-  function reset()                      { _origin = null; _dest = null; _km = null; }
+  function getImmediateDistanceKm()         { return _immediateKm; }
+  function requestImmediateDistance(callback) {
+    if (!_immediateOriginPlace?.geometry || !_immediateDestinationPlace?.geometry) {
+      if (typeof callback === 'function') callback(null);
+      return;
+    }
+    if (_immediateKm != null && Number.isFinite(_immediateKm)) {
+      if (typeof callback === 'function') callback(_immediateKm);
+      return;
+    }
+    _tryDistImmediate(callback);
+  }
+  function resetImmediate()               { _immediateOriginPlace = null; _immediateDestinationPlace = null; _immediateKm = null; }
+  function reset()                        { _origin = null; _dest = null; _km = null; }
 
-  return { isActive, getDistanceKm, getOriginPlace, getDestinationPlace, setOriginFromCoords, setDestinationFromCoords, reset };
+  return { isActive, getDistanceKm, getOriginPlace, getDestinationPlace, setOriginFromCoords, setDestinationFromCoords, reset, getImmediateDistanceKm, requestImmediateDistance, resetImmediate };
 })();

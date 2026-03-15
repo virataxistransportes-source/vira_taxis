@@ -99,6 +99,47 @@ const WhatsApp = (() => {
     );
   }
 
+  /**
+   * Mensagem para embarque imediato.
+   * Deixa explícito para a equipe que é pedido de EMBARQUE IMEDIATO (disponibilidade de veículo ir até o cliente).
+   */
+  function buildMessageImmediatePickup(data) {
+    const name        = _s(data.name);
+    const phone       = _s(data.phone);
+    const origin      = _s(data.origin);
+    const destination = _s(data.destination);
+    const date        = _fmtDate(data.date);
+    const time        = _s(data.time) || 'Não informado';
+    const passengers  = Math.max(1, Math.min(6, parseInt(data.passengers, 10) || 1));
+    const luggage     = Math.max(0, Math.min(20, parseInt(data.luggage, 10) || 0));
+    const vehicle     = data.requiresVan ? '🚗 Carro 7 lugares' : '🚗 Sedan';
+
+    const kmBlock = (data.estimatedKm && Number.isFinite(data.estimatedKm))
+      ? `📏 Distância: ~${Math.ceil(data.estimatedKm)} km\n\n`
+      : '';
+
+    const estimateBlock = (data.total && Number.isFinite(data.total))
+      ? `💰 *Estimativa:* ${Pricing.formatBRL(data.total)}\n\n`
+      : '';
+
+    return (
+      `Olá, ViraTáxis! 👋\n\n`
+    + `🚨 *EMBARQUE IMEDIATO* — Cliente quer embarcar agora. Verificar disponibilidade de veículo para ir até o endereço.\n\n`
+    + `👤 *Nome:* ${name}\n`
+    + `📱 *Telefone:* ${phone}\n\n`
+    + `📍 *Origem (onde buscar):* ${origin}\n`
+    + `🏁 *Destino:* ${destination}\n\n`
+    + kmBlock
+    + `📅 *Data:* ${date}\n`
+    + `🕐 *Horário:* ${time}\n\n`
+    + `👥 *Passageiros:* ${passengers}\n`
+    + `🧳 *Bagagens:* ${luggage}\n`
+    + `${vehicle}\n\n`
+    + estimateBlock
+    + `Aguardo confirmação de disponibilidade. Obrigado!`
+    );
+  }
+
   function getUrl(data) {
     const safeNumber = _safeNumber(WHATSAPP_NUMBER);
     if (!/^\d{12,13}$/.test(safeNumber)) {
@@ -119,6 +160,16 @@ const WhatsApp = (() => {
     return `https://wa.me/${safeNumber}?text=${encodeURIComponent(message)}`;
   }
 
+  function getUrlImmediatePickup(data) {
+    const safeNumber = _safeNumber(WHATSAPP_NUMBER);
+    if (!/^\d{12,13}$/.test(safeNumber)) {
+      console.error('WhatsApp: número inválido');
+      return '#';
+    }
+    const message = buildMessageImmediatePickup(data);
+    return `https://wa.me/${safeNumber}?text=${encodeURIComponent(message)}`;
+  }
+
   function redirect(data) {
     const url = getUrl(data);
     if (url === '#') return;
@@ -131,6 +182,12 @@ const WhatsApp = (() => {
     window.open(url, '_blank', 'noopener,noreferrer');
   }
 
-  return { redirect, redirectCustomRoute, buildMessage, buildMessageCustomRoute, getUrl, getUrlCustomRoute };
+  function redirectImmediatePickup(data) {
+    const url = getUrlImmediatePickup(data);
+    if (url === '#') return;
+    window.open(url, '_blank', 'noopener,noreferrer');
+  }
+
+  return { redirect, redirectCustomRoute, redirectImmediatePickup, buildMessage, buildMessageCustomRoute, buildMessageImmediatePickup, getUrl, getUrlCustomRoute, getUrlImmediatePickup };
 
 })();
