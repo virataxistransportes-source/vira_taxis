@@ -332,20 +332,27 @@
 }
 
 .route-custom-link {
-  margin: .6rem 0 0;
+  margin: .75rem 0 0;
   text-align: right;
 }
 .route-custom-link .link-button {
-  background: none;
-  border: none;
-  padding: 0;
+  display: inline-block;
+  background: var(--sky-20);
+  border: 1px solid var(--sky);
+  border-radius: var(--r-full);
+  padding: .5rem 1rem;
   font-family: var(--font-body);
-  font-size: .82rem;
+  font-size: .875rem;
+  font-weight: 600;
   color: var(--sky-deep);
   cursor: pointer;
-  transition: color var(--t-fast);
+  transition: background var(--t-fast), border-color var(--t-fast), color var(--t-fast);
 }
-.route-custom-link .link-button:hover { color: var(--ink); }
+.route-custom-link .link-button:hover {
+  background: var(--sky);
+  border-color: var(--sky-mid);
+  color: var(--ink);
+}
 
 /* Modal cotação rota fora do padrão — desktop: mais largo; mobile: campos em coluna */
 /* Sobrescreve .picker-modal { max-width: 340px } para o modal de cotação ficar largo no desktop */
