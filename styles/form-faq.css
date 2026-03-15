@@ -46,6 +46,11 @@
 .agendamento__slogan-float .float-badge--1 {
   top: -12px;
   right: 12px;
+  background: var(--sky-deep);
+  color: var(--white);
+}
+.agendamento__slogan-float .float-badge--1 i {
+  color: var(--white);
 }
 .agendamento__slogan-float .float-badge--2 {
   bottom: -12px;
