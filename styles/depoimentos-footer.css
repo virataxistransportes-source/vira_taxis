@@ -314,6 +314,13 @@
   flex-direction: column;
   align-items: flex-end;
   gap: .6rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--t-mid);
+}
+.wa-float-wrap.show {
+  opacity: 1;
+  pointer-events: auto;
 }
 .wa-float-cta {
   font-family: var(--font-body);
@@ -351,13 +358,9 @@
   font-weight: 600;
   font-size: .84rem;
   box-shadow: 0 6px 24px rgba(37,211,102,.38);
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity var(--t-mid), transform var(--t-mid);
+  transition: transform var(--t-mid);
 }
-.wa-float-wrap .wa-float.show {
-  opacity: 1;
-  pointer-events: auto;
+.wa-float-wrap.show .wa-float {
   animation: waPulse 3s ease-in-out infinite;
 }
 .wa-float:hover {

@@ -1490,13 +1490,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  /* ── 14. WHATSAPP FLOAT ────────────────────────────────── */
-  const waFloat = $('.wa-float');
-  if (waFloat) {
+  /* ── 14. WHATSAPP FLOAT + QUER EMBARCAR AGORA ────────────── */
+  const waFloatWrap = $('.wa-float-wrap');
+  if (waFloatWrap) {
     let shown = false;
-    const show = () => { if (shown) return; shown = true; waFloat.classList.add('show'); };
-    window.addEventListener('scroll', () => { if (window.scrollY > 320) show(); }, { passive: true });
-    setTimeout(show, 5000);
+    const show = () => { if (shown) return; shown = true; waFloatWrap.classList.add('show'); };
+    window.addEventListener('scroll', () => { if (window.scrollY > 200) show(); }, { passive: true });
+    setTimeout(show, 100);
   }
 
 });
