@@ -872,6 +872,20 @@
   border-top: 1px solid var(--line);
 }
 
+/* Modal embarque imediato: no mobile os botões em coluna para não cortar "Ver estimativa" */
+@media (max-width: 540px) {
+  .immediate-quote-footer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .immediate-quote-footer .btn {
+    flex: none;
+    min-width: 0;
+    justify-content: center;
+    white-space: nowrap;
+  }
+}
+
 .sr-only {
   position: absolute;
   width: 1px;

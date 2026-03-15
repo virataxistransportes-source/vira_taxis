@@ -319,19 +319,20 @@
   font-family: var(--font-body);
   font-size: .8rem;
   font-weight: 600;
-  color: var(--ink);
-  background: var(--white);
-  border: 1px solid var(--line);
+  color: var(--white);
+  background: var(--sky-deep);
+  border: 1px solid var(--sky-deep);
   border-radius: var(--r-full);
   padding: .5rem 1rem;
   box-shadow: var(--sh-md);
   cursor: pointer;
-  transition: background var(--t-fast), border-color var(--t-fast), color var(--t-fast);
+  transition: background var(--t-fast), border-color var(--t-fast), filter var(--t-fast);
 }
 .wa-float-cta:hover {
-  background: var(--surface);
+  background: var(--sky-mid);
   border-color: var(--sky-mid);
-  color: var(--sky-deep);
+  color: var(--white);
+  filter: brightness(1.05);
 }
 
 .wa-float {
