@@ -107,6 +107,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.body.classList.toggle('no-scroll', open);
   });
   $$('.mobile-nav__link').forEach(l => l.addEventListener('click', closeMenu));
+  mobileMenu?.querySelector('a[href="#agendamento"]')?.addEventListener('click', closeMenu);
   document.addEventListener('click', e => {
     if (!mobileMenu?.contains(e.target) && !hamburger?.contains(e.target)) closeMenu();
   });
@@ -968,7 +969,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  const openImmediateQuoteModalMobile = $('#openImmediateQuoteModalMobile');
   openImmediateQuoteModal?.addEventListener('click', (e) => { e.preventDefault(); openImmediateQuote(); });
+  openImmediateQuoteModalMobile?.addEventListener('click', (e) => {
+    e.preventDefault();
+    closeMenu();
+    openImmediateQuote();
+  });
   closeImmediateQuoteModal?.addEventListener('click', closeImmediateQuote);
   immediateQuoteCancelBtn?.addEventListener('click', closeImmediateQuote);
   immediateQuoteOverlay?.addEventListener('click', (e) => { if (e.target === immediateQuoteOverlay) closeImmediateQuote(); });

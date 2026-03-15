@@ -40,7 +40,31 @@
   transition: color var(--t-fast), background var(--t-fast);
 }
 .nav__link:hover { color: var(--ink); background: var(--surface); }
-.nav__cta { font-size: .83rem; padding: .48rem 1.1rem; margin-left: .5rem; }
+.nav__ctas {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  margin-left: .5rem;
+}
+.nav__cta { font-size: .83rem; padding: .48rem 1.1rem; }
+.nav__cta--immediate {
+  font-family: var(--font-body);
+  font-size: .83rem;
+  font-weight: 600;
+  color: var(--white);
+  background: var(--sky-deep);
+  border: 1px solid var(--sky-deep);
+  border-radius: var(--r-full);
+  padding: .48rem 1rem;
+  cursor: pointer;
+  transition: background var(--t-fast), border-color var(--t-fast), filter var(--t-fast);
+}
+.nav__cta--immediate:hover {
+  background: var(--sky-mid);
+  border-color: var(--sky-mid);
+  color: var(--white);
+  filter: brightness(1.05);
+}
 
 /* Hamburger */
 .hamburger {
@@ -114,6 +138,27 @@
   transition-delay: 0.3s;
 }
 .mobile-nav.open .mobile-nav .btn:hover { background: var(--sky-deep); color: var(--white); }
+.mobile-nav__cta--immediate {
+  background: var(--sky-deep);
+  border: 1px solid var(--sky-deep);
+  color: var(--white);
+  font-weight: 600;
+  margin-top: 1.25rem;
+  opacity: 0;
+  transform: translateX(16px);
+  transition: opacity 0.3s var(--ease), transform 0.3s var(--ease), background var(--t-fast), filter var(--t-fast);
+}
+.mobile-nav.open .mobile-nav__cta--immediate {
+  opacity: 1;
+  transform: translateX(0);
+  transition-delay: 0.28s;
+}
+.mobile-nav__cta--immediate:hover {
+  background: var(--sky-mid);
+  border-color: var(--sky-mid);
+  color: var(--white);
+  filter: brightness(1.05);
+}
 
 /* ── Hero ────────────────────────────────────────────────── */
 .hero {

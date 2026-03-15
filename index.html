@@ -158,7 +158,10 @@
         <li><a href="#servicos"    class="nav__link">Soluções</a></li>
         <li><a href="#depoimentos" class="nav__link">Depoimentos</a></li>
         <li><a href="#faq"         class="nav__link">FAQ</a></li>
-        <li>
+        <li class="nav__ctas">
+          <button type="button" class="btn nav__cta nav__cta--immediate" id="openImmediateQuoteModal" aria-controls="immediateQuoteOverlay">
+            Quer embarcar agora?
+          </button>
           <a href="#agendamento" class="btn btn--primary nav__cta">
             <i class="fa-solid fa-calendar-check"></i> Agendar viagem
           </a>
@@ -177,6 +180,9 @@
   <a href="#servicos"    class="mobile-nav__link">Soluções</a>
   <a href="#depoimentos" class="mobile-nav__link">Depoimentos</a>
   <a href="#faq"         class="mobile-nav__link">FAQ</a>
+  <button type="button" class="btn btn--full mobile-nav__cta--immediate" id="openImmediateQuoteModalMobile" aria-controls="immediateQuoteOverlay">
+    Quer embarcar agora?
+  </button>
   <a href="#agendamento" class="btn btn--primary btn--full">
     <i class="fa-solid fa-calendar-check"></i> Agendar viagem
   </a>
@@ -1005,11 +1011,8 @@
 
 </footer>
 
-<!-- Botão embarcar agora + WhatsApp flutuante -->
+<!-- WhatsApp flutuante -->
 <div class="wa-float-wrap">
-  <button type="button" class="wa-float-cta" id="openImmediateQuoteModal" aria-controls="immediateQuoteOverlay">
-    Quer embarcar agora?
-  </button>
   <a href="https://wa.me/5519988244480" target="_blank" rel="noopener noreferrer"
      class="wa-float" aria-label="Fale conosco pelo WhatsApp">
     <i class="fa-brands fa-whatsapp"></i>
