@@ -285,14 +285,29 @@ document.addEventListener('DOMContentLoaded', () => {
     return yy === y && mm === m && dd === d;
   }
 
-  function _setTimePickerDefaultForToday() {
+  /** Retorna { h, m } = agora + N minutos (h 0–23, m 0–59). Máx 23:59. */
+  function _getNowPlusMinutes(minutesAhead) {
     const now = new Date();
     let h = now.getHours();
-    let m = now.getMinutes() + 30;
+    let m = now.getMinutes() + (minutesAhead || 0);
     if (m >= 60) { h += 1; m -= 60; }
     if (h >= 24) { h = 23; m = 59; }
+    return { h, m };
+  }
+
+  function _setTimePickerDefaultForToday(minutesAhead) {
+    const mins = minutesAhead ?? 30;
+    const { h, m } = _getNowPlusMinutes(mins);
     tHour = h;
     tMin = m;
+  }
+
+  /** Verifica se (hour, min) é >= agora + minutesAhead (para hoje). */
+  function _isTimeAtLeastMinutesAhead(hour, min, minutesAhead) {
+    const { h, m } = _getNowPlusMinutes(minutesAhead || 15);
+    if (hour < h) return false;
+    if (hour > h) return true;
+    return min >= m;
   }
 
   let _timePickerTarget = null;
@@ -304,8 +319,13 @@ document.addEventListener('DOMContentLoaded', () => {
     if (timePickerErr) { timePickerErr.textContent = ''; timePickerErr.classList.remove('show'); }
     const dateEl = getTimePickerDateEl();
     const isoDate = dateEl?.value ?? '';
+    const isImmediate = !!target?.isImmediate;
     if (_isToday(isoDate)) {
-      _setTimePickerDefaultForToday();
+      _setTimePickerDefaultForToday(isImmediate ? 15 : 30);
+      if (isImmediate) {
+        const { h, m } = _getNowPlusMinutes(15);
+        if (tHour < h || (tHour === h && tMin < m)) { tHour = h; tMin = m; }
+      }
     } else {
       tHour = 8;
       tMin = 0;
@@ -340,6 +360,17 @@ document.addEventListener('DOMContentLoaded', () => {
       const unit = btn.dataset.unit;
       if (unit === 'h') tHour = (tHour + dir + 24) % 24;
       if (unit === 'm') tMin  = (tMin  + dir + 60) % 60;
+
+      const dateEl = getTimePickerDateEl();
+      const isoDate = dateEl?.value ?? '';
+      if (_timePickerTarget?.isImmediate && _isToday(isoDate)) {
+        const { h, m } = _getNowPlusMinutes(15);
+        if (tHour < h || (tHour === h && tMin < m)) {
+          tHour = h;
+          tMin = m;
+        }
+      }
+
       if (hourDisp) hourDisp.textContent = String(tHour).padStart(2,'0');
       if (minDisp)  minDisp.textContent  = String(tMin).padStart(2,'0');
     });
@@ -356,12 +387,23 @@ document.addEventListener('DOMContentLoaded', () => {
   timeConfirmBtn?.addEventListener('click', () => {
     const dateEl = getTimePickerDateEl();
     const isoDate = dateEl?.value ?? '';
-    if (_isToday(isoDate) && _isTimeInPast(tHour, tMin)) {
-      if (timePickerErr) {
-        timePickerErr.textContent = 'Para hoje, selecione um horário que ainda não passou.';
-        timePickerErr.classList.add('show');
+    const isImmediate = !!_timePickerTarget?.isImmediate;
+    if (_isToday(isoDate)) {
+      const minAhead = isImmediate ? 15 : 0;
+      if (isImmediate && !_isTimeAtLeastMinutesAhead(tHour, tMin, 15)) {
+        if (timePickerErr) {
+          timePickerErr.textContent = 'Para embarque imediato, selecione um horário com pelo menos 15 minutos a partir de agora.';
+          timePickerErr.classList.add('show');
+        }
+        return;
       }
-      return;
+      if (!isImmediate && _isTimeInPast(tHour, tMin)) {
+        if (timePickerErr) {
+          timePickerErr.textContent = 'Para hoje, selecione um horário que ainda não passou.';
+          timePickerErr.classList.add('show');
+        }
+        return;
+      }
     }
     if (timePickerErr) { timePickerErr.textContent = ''; timePickerErr.classList.remove('show'); }
     const val = `${String(tHour).padStart(2,'0')}:${String(tMin).padStart(2,'0')}`;
@@ -893,6 +935,23 @@ document.addEventListener('DOMContentLoaded', () => {
   updateImmediateQuoteLuggage(0);
 
   function openImmediateQuote() {
+    const now = new Date();
+    const y = now.getFullYear();
+    const m = now.getMonth() + 1;
+    const d = now.getDate();
+    const isoDate = `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const dateDisplay = `${String(d).padStart(2,'0')}/${String(m).padStart(2,'0')}/${y}`;
+    const { h, m: min } = _getNowPlusMinutes(15);
+    const timeVal = `${String(h).padStart(2,'0')}:${String(min).padStart(2,'0')}`;
+
+    if (immediateQuoteDate) immediateQuoteDate.value = isoDate;
+    if (immediateQuoteDateDisplay) immediateQuoteDateDisplay.textContent = dateDisplay;
+    if (immediateQuoteDateTrigger) immediateQuoteDateTrigger.classList.add('has-value');
+
+    if (immediateQuoteTime) immediateQuoteTime.value = timeVal;
+    if (immediateQuoteTimeDisplay) immediateQuoteTimeDisplay.textContent = timeVal;
+    if (immediateQuoteTimeTrigger) immediateQuoteTimeTrigger.classList.add('has-value');
+
     if (immediateQuoteOverlay) {
       immediateQuoteOverlay.classList.add('is-open');
       immediateQuoteOverlay.setAttribute('aria-hidden', 'false');
@@ -940,7 +999,14 @@ document.addEventListener('DOMContentLoaded', () => {
       passengers:  String(immediateQuotePassengers?.value ?? '1'),
       luggage:     String(immediateQuoteLuggage?.value ?? '0'),
     };
-    const { valid, errors } = Validations.validateForm(raw);
+    let { valid, errors } = Validations.validateForm(raw);
+    if (valid && raw.date && raw.time && _isToday(raw.date)) {
+      const [th, tm] = raw.time.split(':').map(Number);
+      if (!_isTimeAtLeastMinutesAhead(th, tm, 15)) {
+        valid = false;
+        errors = { ...errors, time: 'Para embarque imediato, o horário deve ser pelo menos 15 minutos a partir de agora.' };
+      }
+    }
     $$('#immediateQuoteForm .field-msg').forEach(el => { el.textContent = ''; el.classList.remove('show'); });
     $$('#immediateQuoteForm .form-input').forEach(el => el.classList.remove('field-error'));
     immediateQuoteDateTrigger?.classList.remove('field-error');
