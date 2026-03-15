@@ -7,6 +7,7 @@
   .hero__inner           { grid-template-columns: 1fr 1fr; gap: 2.5rem; }
   .historia__inner       { grid-template-columns: 1fr; }
   .historia__media       { flex-direction: row; flex-wrap: wrap; justify-content: center; }
+  .historia__icon-card   { width: 280px; height: 280px; }
   .diferenciais__grid    { grid-template-columns: repeat(2, 1fr); }
   .agendamento__inner    { grid-template-columns: 1fr; gap: 2.5rem; min-width: 0; }
   .agendamento__info     { text-align: center; max-width: 540px; margin-inline: auto; min-width: 0; overflow-wrap: break-word; }
@@ -46,6 +47,7 @@
 
 /* ── Mobile (≤ 600px) ────────────────────────────────────── */
 @media (max-width: 600px) {
+  .historia__icon-card { width: 260px; height: 260px; }
   .servicos__grid     { grid-template-columns: 1fr; }
   .diferenciais__grid { grid-template-columns: 1fr; }
   .form-row           { grid-template-columns: 1fr; }
