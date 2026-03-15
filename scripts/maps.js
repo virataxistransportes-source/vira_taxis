@@ -141,6 +141,24 @@ const MapsService = (() => {
       if (storeKey === 'origin') { _immediateOriginPlace = null; _immediateKm = null; }
       if (storeKey === 'destination') { _immediateDestinationPlace = null; _immediateKm = null; }
     });
+
+    // Ao sair do campo: se há texto mas não foi seleção do autocomplete, tenta geocodificar (igual ao formulário principal)
+    el.addEventListener('blur', () => {
+      const address = (el.value || '').trim();
+      const hasPlace = (storeKey === 'origin' && _immediateOriginPlace) || (storeKey === 'destination' && _immediateDestinationPlace);
+      if (address.length < 8 || hasPlace) return;
+
+      _geocodeToPlace(address, (place) => {
+        if (!place) return;
+        const addr = (place.formatted_address || place.name || '').slice(0, 300);
+        el.value = addr;
+        el.dispatchEvent(new Event('change', { bubbles: true }));
+        if (storeKey === 'origin') _immediateOriginPlace = place;
+        if (storeKey === 'destination') _immediateDestinationPlace = place;
+        _immediateKm = null;
+        _tryDistImmediate();
+      });
+    });
   }
 
   function _tryDistImmediate(callback) {
@@ -178,10 +196,11 @@ const MapsService = (() => {
     );
   }
 
-  function _geocodeAndSet(id, address, onDone) {
-    if (!address || address.trim().length < 8) { onDone(null); return; }
+  /** Geocodifica um endereço e retorna um place via callback (para reuso em formulário principal e modais). */
+  function _geocodeToPlace(address, onDone) {
+    if (!address || String(address).trim().length < 8) { onDone(null); return; }
     const geocoder = new google.maps.Geocoder();
-    geocoder.geocode({ address: address.trim(), region: 'BR' }, (results, status) => {
+    geocoder.geocode({ address: String(address).trim(), region: 'BR' }, (results, status) => {
       if (status !== 'OK' || !results?.[0]?.geometry) { onDone(null); return; }
       const r = results[0];
       const place = {
@@ -189,6 +208,13 @@ const MapsService = (() => {
         formatted_address: (r.formatted_address || r.address_components?.map(c => c.long_name).join(', ') || '').slice(0, 300),
         name: r.address_components?.[0]?.long_name || '',
       };
+      onDone(place);
+    });
+  }
+
+  function _geocodeAndSet(id, address, onDone) {
+    _geocodeToPlace(address, (place) => {
+      if (!place) { onDone(null); return; }
       onDone(place);
     });
   }
