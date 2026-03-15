@@ -396,10 +396,15 @@
   min-height: 0;
 }
 .custom-quote-desc {
-  font-size: .88rem;
-  color: var(--ink-60);
+  font-size: .9rem;
+  font-weight: 600;
+  color: var(--ink);
   margin: 0 0 1.25rem;
+  padding: .9rem 1rem .9rem 1rem;
   line-height: 1.5;
+  background: var(--sky-20);
+  border-left: 4px solid var(--sky-deep);
+  border-radius: var(--r-sm);
 }
 .custom-quote-body .form-section-label { margin-top: .5rem; }
 .custom-quote-body .form-section-label:first-of-type { margin-top: 0; }
