@@ -97,6 +97,8 @@
   padding: 5rem 1.5rem 2rem;
   flex-direction: column;
   gap: .25rem;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   transform: translateX(100%);
   transition: transform 0.35s var(--ease), visibility 0.35s;
   visibility: hidden;
@@ -126,31 +128,32 @@
 .mobile-nav.open .mobile-nav__link:nth-child(3) { transition-delay: 0.18s; }
 .mobile-nav.open .mobile-nav__link:nth-child(4) { transition-delay: 0.24s; }
 .mobile-nav__link:hover { background: var(--surface); }
-.mobile-nav .btn {
-  margin-top: 1.25rem;
+.mobile-nav__cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  padding: 0.85rem 1.25rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: var(--r-full);
+  text-decoration: none;
   opacity: 0;
   transform: translateX(16px);
-  transition: opacity 0.3s var(--ease), transform 0.3s var(--ease), background var(--t-fast), color var(--t-fast);
+  transition: opacity 0.3s var(--ease), transform 0.3s var(--ease), background var(--t-fast), color var(--t-fast), filter var(--t-fast);
 }
-.mobile-nav.open .mobile-nav .btn {
+.mobile-nav.open .mobile-nav__cta {
   opacity: 1;
   transform: translateX(0);
-  transition-delay: 0.3s;
 }
-.mobile-nav.open .mobile-nav .btn:hover { background: var(--sky-deep); color: var(--white); }
 .mobile-nav__cta--immediate {
   background: var(--sky-deep);
   border: 1px solid var(--sky-deep);
   color: var(--white);
-  font-weight: 600;
-  margin-top: 1.25rem;
-  opacity: 0;
-  transform: translateX(16px);
-  transition: opacity 0.3s var(--ease), transform 0.3s var(--ease), background var(--t-fast), filter var(--t-fast);
+  transition-delay: 0.28s;
 }
 .mobile-nav.open .mobile-nav__cta--immediate {
-  opacity: 1;
-  transform: translateX(0);
   transition-delay: 0.28s;
 }
 .mobile-nav__cta--immediate:hover {
@@ -158,6 +161,20 @@
   border-color: var(--sky-mid);
   color: var(--white);
   filter: brightness(1.05);
+}
+.mobile-nav__cta--agendar {
+  background: var(--green);
+  border: 1px solid var(--green);
+  color: var(--white);
+  transition-delay: 0.32s;
+}
+.mobile-nav.open .mobile-nav__cta--agendar {
+  transition-delay: 0.32s;
+}
+.mobile-nav__cta--agendar:hover {
+  background: var(--green-dark);
+  border-color: var(--green-dark);
+  color: var(--white);
 }
 
 /* ── Hero ────────────────────────────────────────────────── */
