@@ -3,14 +3,38 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <meta name="description" content="ViraTáxis – Transporte urbano e executivo em Campinas, SP. Mais de 10 anos de experiência. Motoristas verificados, frota moderna, preço sob consulta." />
+  <meta name="description" content="Táxi e transporte executivo em Campinas e região. Transfer Viracopos, corridas urbanas e 24h. Cotação rápida pelo WhatsApp. Mais de 10 anos de experiência. ViraTáxis." />
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+  <meta name="theme-color" content="#1757c2" />
+  <link rel="canonical" href="https://www.virataxis.com.br/" />
   <link rel="icon" href="assets/favicon.png" type="image/png" />
 
-  <title>ViraTáxis – Transporte com segurança em Campinas, SP</title>
+  <title>Táxi Campinas | Transporte Executivo e Transfer 24h | ViraTáxis</title>
 
-  <!-- Preconnect fonts -->
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="pt_BR" />
+  <meta property="og:site_name" content="ViraTáxis" />
+  <meta property="og:title" content="Táxi Campinas | Transporte Executivo e Transfer 24h | ViraTáxis" />
+  <meta property="og:description" content="Táxi e transporte executivo em Campinas e região. Transfer Viracopos, corridas urbanas 24h. Cotação rápida pelo WhatsApp. +10 anos de experiência." />
+  <meta property="og:url" content="https://www.virataxis.com.br/" />
+  <meta property="og:image" content="https://www.virataxis.com.br/assets/og-image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="ViraTáxis – Táxi e transporte executivo em Campinas e região" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Táxi Campinas | Transporte Executivo e Transfer 24h | ViraTáxis" />
+  <meta name="twitter:description" content="Táxi e transporte executivo em Campinas e região. Transfer Viracopos, corridas 24h. Cotação pelo WhatsApp." />
+  <meta name="twitter:image" content="https://www.virataxis.com.br/assets/og-image.png" />
+  <meta name="twitter:image:alt" content="ViraTáxis – Táxi e transporte executivo em Campinas" />
+
+  <!-- Preconnect / Preload (performance = SEO) -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preload" href="styles/tokens.css" as="style" />
+  <link rel="preload" href="styles/base.css" as="style" />
 
   <!-- Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
@@ -24,6 +48,98 @@
   <link rel="stylesheet" href="styles/form-faq.css" />
   <link rel="stylesheet" href="styles/depoimentos-footer.css" />
   <link rel="stylesheet" href="styles/responsive.css" />
+
+  <!-- Structured Data (JSON-LD) para SEO e rich results -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "LocalBusiness",
+        "@id": "https://www.virataxis.com.br/#organization",
+        "name": "ViraTáxis",
+        "description": "Táxi e transporte executivo em Campinas e região. Transfer para Viracopos, corridas urbanas, executivo corporativo e atendimento 24 horas.",
+        "url": "https://www.virataxis.com.br/",
+        "telephone": "+55-19-98824-4480",
+        "email": "contato@virataxis.com",
+        "image": "https://www.virataxis.com.br/assets/logo_no_bckg.png",
+        "logo": "https://www.virataxis.com.br/assets/logo_no_bckg.png",
+        "priceRange": "R$",
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Campinas",
+          "addressRegion": "SP",
+          "addressCountry": "BR"
+        },
+        "areaServed": [
+          { "@type": "City", "name": "Campinas", "containedInPlace": { "@type": "State", "name": "São Paulo" } },
+          { "@type": "Place", "name": "Aeroporto Internacional de Viracopos" }
+        ],
+        "openingHoursSpecification": {
+          "@type": "OpeningHoursSpecification",
+          "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+          "opens": "00:00",
+          "closes": "23:59"
+        },
+        "sameAs": [
+          "https://wa.me/5519988244480"
+        ]
+      },
+      {
+        "@type": "TaxiService",
+        "name": "ViraTáxis",
+        "provider": { "@id": "https://www.virataxis.com.br/#organization" },
+        "areaServed": "Campinas e região, SP",
+        "description": "Serviço de táxi e transporte executivo em Campinas. Transfer aeroporto Viracopos, corridas urbanas e intercidades."
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "Como funciona o agendamento?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Preencha o formulário com os dados da sua viagem. Você será redirecionado ao WhatsApp com tudo pré-preenchido. Nossa equipe responde em minutos com a confirmação e os detalhes da corrida." }
+          },
+          {
+            "@type": "Question",
+            "name": "Como é calculado o preço?",
+            "acceptedAnswer": { "@type": "Answer", "text": "O valor é calculado com base na distância percorrida e no tipo de veículo. Nossa equipe confirma a proposta pelo WhatsApp antes do embarque — garantindo que você saiba exatamente o que vai pagar." }
+          },
+          {
+            "@type": "Question",
+            "name": "Vocês atendem Viracopos?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Sim! Transfer para o Aeroporto Internacional de Viracopos é um dos nossos serviços mais solicitados." }
+          },
+          {
+            "@type": "Question",
+            "name": "Qual a diferença entre Sedan e Carro 7 lugares?",
+            "acceptedAnswer": { "@type": "Answer", "text": "O Sedan comporta até 4 passageiros — ideal para deslocamentos executivos e cotidianos. O Carro 7 lugares é indicado para grupos de 5 a 6 passageiros, viagens com muita bagagem ou eventos em Campinas." }
+          },
+          {
+            "@type": "Question",
+            "name": "Atendem madrugada e feriados?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Operamos 24 horas por dia, 7 dias por semana, incluindo feriados. Para corridas de madrugada ou em datas especiais em Campinas, recomendamos o agendamento com antecedência." }
+          },
+          {
+            "@type": "Question",
+            "name": "Quais formas de pagamento?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Aceitamos Pix, cartão de crédito, débito e dinheiro." }
+          },
+          {
+            "@type": "Question",
+            "name": "Vocês atendem outras cidades?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Sim, atendemos outras cidades, sempre priorizando deslocamentos para a Região Metropolitana de Campinas ou de nossa região para qualquer outra cidade." }
+          },
+          {
+            "@type": "Question",
+            "name": "Vocês atendem outros aeroportos além de Viracopos?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Sim, prioritariamente Viracopos, Guarulhos e Congonhas." }
+          }
+        ]
+      }
+    ]
+  }
+  </script>
 </head>
 <body>
 
@@ -33,7 +149,7 @@
 <header class="header" id="header">
   <div class="container header__inner">
     <a href="#agendamento" class="logo" aria-label="ViraTáxis — início">
-      <img src="assets/logo_no_bckg.png" alt="ViraTáxis" class="logo__image" />
+      <img src="assets/logo_no_bckg.png" alt="ViraTáxis – Táxi e transporte executivo em Campinas" class="logo__image" width="180" height="50" />
     </a>
     <nav class="nav" aria-label="Menu principal">
       <ul class="nav__list">
@@ -93,11 +209,11 @@
           <i class="fa-solid fa-location-dot"></i>
           Campinas e região — desde 2016
         </span>
-        <h2 class="agendamento__slogan-h1 hero__h1">
-          Parta com<br/>
-          <span class="accent">confiança.</span><br/>
+        <h1 class="agendamento__slogan-h1 hero__h1">
+          Táxi em Campinas e região.<br/>
+          <span class="accent">Parta com confiança.</span><br/>
           Chegue com <span class="highlight">segurança.</span>
-        </h2>
+        </h1>
         <p class="agendamento__slogan-desc hero__desc">
           Referência em transporte executivo urbano e intercidades. Motoristas profissionais, frota moderna e atendimento humanizado — desde o agendamento, ao embarque até o destino final.
         </p>

@@ -1,0 +1,8 @@
+# ViraTáxis - Campinas
+# https://www.virataxis.com
+
+User-agent: *
+Allow: /
+
+# Sitemap (ajuste o domínio se necessário)
+Sitemap: https://www.virataxis.com/sitemap.xml
