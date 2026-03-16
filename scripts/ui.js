@@ -114,7 +114,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
   $$('.mobile-nav__link').forEach(l => l.addEventListener('click', closeMenu));
-  mobileMenu?.querySelector('a[href="#agendamento"]')?.addEventListener('click', closeMenu);
+  // Fecha o menu ao clicar em qualquer âncora interna (ex: #agendamento, #dados-agendamento)
+  mobileMenu?.querySelectorAll('a[href^="#"]')?.forEach(a => a.addEventListener('click', closeMenu));
   document.addEventListener('click', e => {
     if (!mobileMenu?.contains(e.target) && !hamburger?.contains(e.target)) closeMenu();
   });
