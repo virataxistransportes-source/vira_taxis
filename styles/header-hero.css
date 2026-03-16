@@ -31,7 +31,8 @@
   font-size: .8rem;
   padding: .45rem .9rem;
   border-radius: var(--r-full);
-  white-space: nowrap;
+  white-space: normal;
+  line-height: 1.2;
 }
 .header-quick--immediate {
   background: var(--sky-deep);
