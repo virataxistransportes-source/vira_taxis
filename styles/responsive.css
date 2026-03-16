@@ -31,6 +31,18 @@
   .hamburger      { display: flex; }
   .mobile-nav     { display: flex; }
 
+  .header__inner         { gap: .5rem; }
+  .header__mobile-quick-actions {
+    display: flex;
+    flex: 1;
+    justify-content: flex-end;
+    gap: .5rem;
+  }
+  .header__mobile-quick-actions .header-quick {
+    font-size: .72rem;
+    padding: .38rem .7rem;
+  }
+
   .hero__inner    { grid-template-columns: 1fr; text-align: center; }
   .hero__desc     { margin-inline: auto; }
   .hero__actions  { justify-content: center; }

@@ -970,10 +970,15 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   const openImmediateQuoteModalMobile = $('#openImmediateQuoteModalMobile');
+  const openImmediateQuoteHeader = $('#openImmediateQuoteHeader');
   openImmediateQuoteModal?.addEventListener('click', (e) => { e.preventDefault(); openImmediateQuote(); });
   openImmediateQuoteModalMobile?.addEventListener('click', (e) => {
     e.preventDefault();
     closeMenu();
+    openImmediateQuote();
+  });
+  openImmediateQuoteHeader?.addEventListener('click', (e) => {
+    e.preventDefault();
     openImmediateQuote();
   });
   closeImmediateQuoteModal?.addEventListener('click', closeImmediateQuote);
