@@ -93,18 +93,25 @@ document.addEventListener('DOMContentLoaded', () => {
   /* ── 2. MENU MOBILE ────────────────────────────────────── */
   const hamburger  = $('#hamburger');
   const mobileMenu = $('#mobileMenu');
+  const headerQuickActions = document.querySelector('.header__mobile-quick-actions');
 
   function closeMenu() {
     mobileMenu?.classList.remove('open');
     hamburger?.classList.remove('open');
     hamburger?.setAttribute('aria-expanded', 'false');
     document.body.classList.remove('no-scroll');
+    headerQuickActions?.classList.remove('is-hidden');
   }
   hamburger?.addEventListener('click', () => {
     const open = mobileMenu.classList.toggle('open');
     hamburger.classList.toggle('open', open);
     hamburger.setAttribute('aria-expanded', String(open));
     document.body.classList.toggle('no-scroll', open);
+    if (open) {
+      headerQuickActions?.classList.add('is-hidden');
+    } else {
+      headerQuickActions?.classList.remove('is-hidden');
+    }
   });
   $$('.mobile-nav__link').forEach(l => l.addEventListener('click', closeMenu));
   mobileMenu?.querySelector('a[href="#agendamento"]')?.addEventListener('click', closeMenu);

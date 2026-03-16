@@ -27,6 +27,9 @@
 .header__mobile-quick-actions {
   display: none;
 }
+.header__mobile-quick-actions.is-hidden {
+  display: none !important;
+}
 .header-quick {
   font-size: .8rem;
   padding: .45rem .9rem;
